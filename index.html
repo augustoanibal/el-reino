@@ -42,7 +42,7 @@
             position: relative;
             width: 100%;
             background: rgba(0, 0, 0, 0.2);
-            border: 1px dashed rgba(239, 68, 68, 0.1); /* Delicada línea guía */
+            border: 1px dashed rgba(239, 68, 68, 0.1);
             overflow: hidden;
         }
         .collage-item {
@@ -79,7 +79,7 @@
 
     <div id="gridView" class="hidden p-8 animate-fadeIn">
       <div id="contenedor-tarjetas" class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        </div>
+         </div>
     </div>
 
     <div id="readView" class="flex min-h-[calc(100vh-6rem)]">
@@ -186,7 +186,6 @@
       document.getElementById('poemBookLabel').textContent = poema.book_title || 'EL REINO';
       
       // Colores de borde y etiqueta dinámicos según el libro
-      let borderHoverColor = 'hover:border-amber-500/40';
       let bookTextColor = 'text-amber-500';
       if (poema.book === 'primavera-extramuros') {
         bookTextColor = 'text-emerald-500';
@@ -195,12 +194,16 @@
       }
       
       document.getElementById('poemBookLabel').className = `font-mono text-xs uppercase tracking-widest font-bold ${bookTextColor}`;
-      document.getElementById('poemRenderBadge').textContent = `render: ${poema.tipo_render}`;
+      document.getElementById('poemRenderBadge').textContent = `render: ${poema.tipo_render || 'estandar'}`;
 
       // 2. Renderizar Título del Poema
-      document.getElementById('poemTitle').textContent = poema.title;
+      document.getElementById('poemTitle').textContent = poema.title || 'SIN TÍTULO';
 
-      // 3. Renderizado Dinámico del Cuerpo segun el "tipo_render"
+      // 3. Formatear el contenido de forma segura previniendo crasheos de nulos
+      const rawText = poema.body_raw ? String(poema.body_raw) : '';
+      const textoSeguro = rawText.replace(/\\n/g, '<br>').replace(/\n/g, '<br>') || 'Este poema aún no tiene contenido cargado.';
+
+      // 4. Renderizado Dinámico del Cuerpo segun el "tipo_render"
       const container = document.getElementById('poemBodyContainer');
       container.innerHTML = ''; // Limpiamos el contenedor
 
@@ -209,19 +212,19 @@
         case 'estandar':
         case 'tradicional':
           container.className = "text-lg leading-relaxed text-zinc-300 font-light font-serif whitespace-pre-line space-y-4";
-          container.innerHTML = poema.body_raw.replace(/\\n/g, '<br>');
+          container.innerHTML = textoSeguro;
           break;
 
         case 'preformateado':
         case 'terminal':
           container.className = "font-code text-sm text-amber-400/90 bg-zinc-950/60 p-6 rounded-xl border border-zinc-800/80 whitespace-pre-wrap overflow-x-auto leading-relaxed";
-          container.innerHTML = poema.body_raw.replace(/\\n/g, '<br>');
+          container.innerHTML = textoSeguro;
           break;
 
         case 'tabular_grid':
           container.className = "flex flex-col gap-4 font-mono text-base text-cyan-100/90";
           
-          const lineas = poema.body_raw.split('\\n');
+          const lineas = rawText.split('\\n');
           lineas.forEach(linea => {
             const columnas = linea.split('||');
             const filaDiv = document.createElement('div');
@@ -235,7 +238,7 @@
             columnas.forEach(col => {
               const colSpan = document.createElement('div');
               colSpan.className = "whitespace-pre-line";
-              colSpan.innerHTML = col.trim().replace(/\\n/g, '<br>');
+              colSpan.innerHTML = col.trim().replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
               filaDiv.appendChild(colSpan);
             });
             container.appendChild(filaDiv);
@@ -259,12 +262,17 @@
               span.style.fontWeight = el.weight || 'normal';
               span.style.fontStyle = el.style || 'normal';
               span.style.color = el.color || '#E4E4E7';
-              span.innerHTML = el.texto.replace(/\\n/g, '<br>');
+              span.innerHTML = el.texto.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
               canvas.appendChild(span);
             });
           }
 
           container.appendChild(canvas);
+          break;
+
+        default:
+          container.className = "text-lg leading-relaxed text-zinc-300 font-light font-serif whitespace-pre-line space-y-4";
+          container.innerHTML = textoSeguro;
           break;
       }
     }
@@ -272,6 +280,7 @@
     // --- FUNCIÓN DINÁMICA: DIBUJAR TARJETAS DESDE SUPABASE ---
     function dibujarGridDePoemas() {
       const contenedor = document.getElementById('contenedor-tarjetas');
+      if (!contenedor) return;
       contenedor.innerHTML = ''; // Borramos cualquier tarjeta estática vieja
 
       Object.keys(catalog).forEach(key => {
@@ -291,15 +300,14 @@
 
         card.className = `bg-zinc-950 border border-zinc-900 p-6 rounded-2xl transition-all cursor-pointer group ${borderHoverColor}`;
         
-        // Formatear extracto del cuerpo
-        const extracto = poema.body_raw 
-          ? poema.body_raw.replace(/\\n/g, ' ').substring(0, 95) + '...' 
-          : 'Sin contenido disponible.';
+        // Formatear extracto de contenido de forma limpia
+        const rawContent = poema.body_raw ? String(poema.body_raw) : '';
+        const extracto = rawContent.replace(/\\n/g, ' ').replace(/\n/g, ' ').substring(0, 95) + '...';
 
         card.innerHTML = `
           <div class="font-mono text-xs ${badgeColor} mb-2 uppercase tracking-wider">${poema.book_title || 'EL REINO'}</div>
           <h3 class="text-xl font-bold text-zinc-100 group-hover:text-zinc-50 transition-colors uppercase">${poema.title || 'Sin Título'}</h3>
-          <p class="text-zinc-500 text-sm mt-2 line-clamp-2 italic font-light">${extracto}</p>
+          <p class="text-zinc-500 text-sm mt-2 line-clamp-2 italic font-light">${extracto || 'Sin contenido disponible.'}</p>
         `;
 
         // Añadir el comportamiento interactivo al hacer clic
@@ -323,11 +331,11 @@
         const nuevoCatalogo = {};
         data.forEach(poema => {
           nuevoCatalogo[poema.key] = {
-            title: poema.titulo, // Conectado a tu columna 'titulo'
+            title: poema.titulo, 
             book: poema.book,
-            book_title: poema.book, // Usará la columna book temporalmente para la etiqueta superior
-            tipo_render: poema.tipo_render, // Conectado a tu columna 'tipo_render'
-            body_raw: poema.contenido, // Conectado a tu columna 'contenido'
+            book_title: poema.book, 
+            tipo_render: poema.tipo_render, 
+            body_raw: poema.contenido, 
             metadatos_diseno: typeof poema.metadatos_diseno === 'string' 
               ? JSON.parse(poema.metadatos_diseno) 
               : (poema.metadatos_diseno || {})
@@ -337,7 +345,7 @@
         catalog = nuevoCatalogo;
         console.log("Poemas cargados con éxito desde Supabase:", catalog);
 
-        // 1. Dibujar el selector de secciones con datos dinámicos reales
+        // 1. Dibujar el selector de secciones dinámico
         dibujarGridDePoemas();
 
         // 2. Renderizar el primer poema en pantalla por defecto
@@ -357,13 +365,6 @@
       const input = document.getElementById('binaryInput').value.trim();
       const resultDiv = document.getElementById('binaryResult');
       resultDiv.classList.remove('hidden');
-      
-      // Buscar si el código binario ingresado coincide con el binary_code de alguna de nuestras entradas
-      let poemaEncontradoKey = null;
-      Object.keys(catalog).forEach(key => {
-        // Esta lógica decodifica si encuentras la llave binaria exacta en tu base de datos
-        // de forma dinámica si guardas los códigos en Supabase en el futuro.
-      });
 
       if (input === "0000000100101010") {
         resultDiv.innerHTML = `<span class="text-cyan-400">✓ TRANSMISIÓN ENCONTRADA:</span> Abriendo fragmento de Sofonías...`;
@@ -416,6 +417,7 @@
 
     function renderComments() {
       const container = document.getElementById('commentsContainer');
+      if (!container) return;
       container.innerHTML = '';
 
       const sortedComments = Object.values(localCommentsCache)
@@ -468,7 +470,7 @@
     window.onload = function() {
       initVisitCounter();
       loadComments();
-      fetchPoemsFromSupabase(); // Se conecta a Supabase y renderiza dinámicamente todo
+      fetchPoemsFromSupabase();
     };
   </script>
 </body>
