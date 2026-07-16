@@ -4,11 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EL REINO - Augusto Aníbal Toledo</title>
+    <!-- Fuentes de Google: Lora para el lirismo, Space Grotesk para interfaz y Fira Code para la cibernética -->
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Source+Serif+4:ital,opsz,wght@300;400;600;700&family=Space+Grotesk:wght@400;700&family=Fira+Code:wght@300;500&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Iconos de consola -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     
-    <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+    <!-- CONEXIÓN GLOBAL: Cliente Oficial de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
         tailwind.config = {
@@ -29,6 +33,12 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: #121212; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #2c2c2c; border-radius: 2px; }
         
+        /* Reglas CSS críticas para proteger la disposición espacial del autor */
+        .white-space-pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
         /* Lienzo absoluto para poemas collage/libres */
         .collage-canvas {
             position: relative;
@@ -47,6 +57,7 @@
 </head>
 <body class="bg-[#0B0B0C] text-[#E4E4E7] selection:bg-amber-950 selection:text-amber-200">
 
+  <!-- HEADER -->
   <header class="h-24 fixed top-0 left-0 right-0 bg-[#0B0B0C]/90 backdrop-blur-md border-b border-zinc-800/80 z-50">
     <div class="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
       <div class="flex items-center gap-4">
@@ -69,15 +80,18 @@
 
   <div class="pt-24">
 
+    <!-- VISTA RED / SECCIONES -->
     <div id="gridView" class="hidden p-8 animate-fadeIn">
       <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         
+        <!-- LIBRO 1 -->
         <div class="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl hover:border-emerald-500/40 transition-all cursor-pointer group" onclick="selectPoem('extramuros_orilla')">
           <div class="font-mono text-xs text-emerald-500 mb-2">PRIMAVERA EXTRAMUROS (2018)</div>
           <h3 class="text-xl font-bold text-zinc-100 group-hover:text-emerald-400 transition-colors">Orilla (primer paso)</h3>
           <p class="text-zinc-500 text-sm mt-2 line-clamp-2 italic">Lirismo inicial, juegos de tensión espacial en blanco.</p>
         </div>
 
+        <!-- LIBRO 2 -->
         <div class="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl hover:border-cyan-500/40 transition-all cursor-pointer group" onclick="selectPoem('orbita_o3')">
           <div class="font-mono text-xs text-cyan-400 mb-2">ÓRBITA ROTA (2019)</div>
           <h3 class="text-xl font-bold text-zinc-100 group-hover:text-cyan-400 transition-colors">O3*</h3>
@@ -90,6 +104,7 @@
           <p class="text-zinc-500 text-sm mt-2 line-clamp-2 italic">Deconstrucción matemática en collage sobre lienzo.</p>
         </div>
 
+        <!-- LIBRO 3 -->
         <div class="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl hover:border-amber-500/40 transition-all cursor-pointer group" onclick="selectPoem('silencio')">
           <div class="font-mono text-xs text-amber-500 mb-2">EL REINO - SECCIÓN I</div>
           <h3 class="text-xl font-bold text-zinc-100 group-hover:text-amber-400 transition-colors">El silencio es lo que hay</h3>
@@ -99,37 +114,45 @@
       </div>
     </div>
 
+    <!-- VISTA LECTURA -->
     <div id="readView" class="flex min-h-[calc(100vh-6rem)]">
       
       <main class="flex-1 overflow-y-auto p-10 lg:p-16 flex justify-center items-start">
         <div class="max-w-3xl w-full" id="poemWrapper">
           
+          <!-- Metadatos de Contexto e Hito Temporal del Poema -->
           <div id="poemMetadataHeader" class="mb-8 font-mono text-xs border-b border-zinc-800/40 pb-4 flex justify-between items-center">
-             <span id="poemBookLabel" class="text-amber-500 uppercase tracking-widest font-bold">EL REINO</span>
+             <span id="poemBookLabel" class="text-amber-500 uppercase tracking-widest">EL REINO</span>
              <span id="poemRenderBadge" class="text-zinc-500 border border-zinc-800 px-2 py-0.5 rounded text-[10px]">render: estandar</span>
           </div>
 
+          <!-- Contenedor Dinámico del Poema -->
           <div id="poemContent" class="space-y-6">
             <h2 id="poemTitle" class="text-3xl lg:text-4xl font-light tracking-wide text-zinc-100 uppercase">EL SILENCIO ES LO QUE HAY</h2>
             
+            <!-- Aquí el JavaScript inyectará el contenido según las reglas del motor -->
             <div id="poemBodyContainer" class="text-lg leading-relaxed text-zinc-300 font-light">
-               </div>
+               <!-- Inyección dinámica -->
+            </div>
           </div>
 
         </div>
       </main>
 
+      <!-- BARRA LATERAL (CONSOLA Y COMENTARIOS GLOBALES) -->
       <aside class="w-96 border-l border-zinc-800 bg-[#0E0E10] hidden lg:flex flex-col justify-between h-[calc(100vh-6rem)] sticky top-24">
         
         <div class="p-6 border-b border-zinc-800/60">
+          <!-- Contador Global Real-time (Adaptado para Supabase o sesión estática) -->
           <div class="flex items-center justify-between mb-6 p-4 bg-zinc-950 border border-zinc-800 rounded-xl">
             <div class="flex items-center gap-2">
               <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
               <span class="font-mono text-xs text-zinc-400">Habitantes en la red:</span>
             </div>
-            <span id="visitCounter" class="font-mono text-sm font-bold text-amber-500">0000</span>
+            <span id="visitCounter" class="font-mono text-sm font-bold text-amber-500">0001</span>
           </div>
 
+          <!-- TERMINAL SOFONÍAS -->
           <div class="p-4 bg-black border border-amber-500/20 rounded-xl">
             <h4 class="font-mono text-xs text-amber-500 uppercase tracking-widest mb-2 flex items-center gap-2">
               <i class="fa-solid fa-terminal"></i> TERMINAL SOFONÍAS
@@ -146,6 +169,7 @@
           </div>
         </div>
 
+        <!-- SECCIÓN ECO DE COMENTARIOS GLOBALES (SUPABASE) -->
         <div class="p-6 flex-1 flex flex-col min-h-0 bg-zinc-950/40">
           <h3 class="font-mono text-xs tracking-wider text-zinc-400 mb-3 flex items-center gap-2">
             <i class="fa-regular fa-comment-dots text-amber-500"></i> ECO DE LOS VISITANTES (GLOBAL)
@@ -173,9 +197,15 @@
   <script>
     let isGrid = false;
 
-    // --- BASE DE DATOS DE TEXTOS CON MÉTRICAS DE RENDERIZADO (Simulando Supabase) ---
+    // --- BASE DE DATOS DE CONEXIÓN A SUPABASE ---
+    const SUPABASE_URL = "https://kpvucfktjnuqltuvgflx.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwdnVjZmt0am51cWx0dXZnZmx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjk5MzIsImV4cCI6MjA5OTcwNTkzMn0.qV51Slxgz9pRnlGzLQB404SybQz4gOkDIbwSFnNxD-Q";
+
+    // Inicializamos el cliente oficial
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // --- CATÁLOGO LOCAL DE TEXTOS CON MÉTRICAS DE RENDERIZADO ---
     const catalog = {
-      // LIBRO 1: Primavera Extramuros (Estilo Lírico tradicional con ligeros espacios dramáticos)
       extramuros_orilla: {
         title: "Orilla (primer paso)",
         book: "primavera-extramuros",
@@ -192,7 +222,6 @@ Dejaste atrás los muros del invierno.`,
         metadatos_diseno: {}
       },
 
-      // LIBRO 2: Órbita Rota - Estructura Tabular de Columnas Simétricas ("O3*")
       orbita_o3: {
         title: "O3*",
         book: "orbita-rota",
@@ -204,11 +233,10 @@ Sin órbitas de regreso || El vacío nos reclama`,
         metadatos_diseno: {
           columnas: 2,
           gap: "2.5rem",
-          mobile_stack: true 
+          mobile_stack: true
         }
       },
 
-      // LIBRO 2: Órbita Rota - Estructura de Lienzo / Collage Libre ("i6*")
       orbita_i6: {
         title: "i6*",
         book: "orbita-rota",
@@ -226,17 +254,16 @@ Sin órbitas de regreso || El vacío nos reclama`,
         }
       },
 
-      // LIBRO 3: EL REINO - Estética de Terminal/Código de Error ("El Silencio es lo que hay")
       silencio: {
         title: "EL SILENCIO ES LO QUE HAY",
         book: "el-reino",
         book_title: "EL REINO (2017-2024)",
-        tipo_render: "preformateado", 
+        tipo_render: "preformateado",
         body_raw: `Alto, piedra, acantilado
 eso era yo, también
 pradera, susurro y hoguera.
 Pasajero, arrastro
-el hálito infecundo de los muchos
+el hálito infecundo de los many
 como un ruido que es solo silencio.
 
 Embebidos de nostalgia
@@ -283,7 +310,7 @@ Bienvenido, curioso del papel impreso. Has quebrado la matriz binaria del Reino.
       document.getElementById('viewText').textContent = isGrid ? 'VISTA LECTURA' : 'VER SECCIONES';
     }
 
-    // --- ARQUITECTO DE RENDERIZADO ADAPTATIVO (Frontend Engine Corregido) ---
+    // --- ARQUITECTO DE RENDERIZADO ADAPTATIVO (Frontend Engine) ---
     function selectPoem(key) {
       const poema = catalog[key];
       if (!poema) return;
@@ -292,40 +319,30 @@ Bienvenido, curioso del papel impreso. Has quebrado la matriz binaria del Reino.
       document.getElementById('gridView').classList.add('hidden');
       document.getElementById('readView').classList.remove('hidden');
       
-      // 1. Renderizar Cabecera de Metadatos
       document.getElementById('poemBookLabel').textContent = poema.book_title;
       document.getElementById('poemBookLabel').className = `font-mono text-xs uppercase tracking-widest ${
         poema.book === 'primavera-extramuros' ? 'text-emerald-500' :
         poema.book === 'orbita-rota' ? 'text-cyan-400' : 'text-amber-500'
       }`;
       document.getElementById('poemRenderBadge').textContent = `render: ${poema.tipo_render}`;
-
-      // 2. Renderizar Título del Poema
       document.getElementById('poemTitle').textContent = poema.title;
 
-      // 3. Renderizado Dinámico del Cuerpo segun el "tipo_render"
       const container = document.getElementById('poemBodyContainer');
-      container.innerHTML = ''; // Limpiamos el contenedor
+      container.innerHTML = ''; 
 
       switch (poema.tipo_render) {
-        
         case 'estandar':
-          // Estilo Lírico tradicional (Lora, preservando saltos reales con <br> y alineación espacial)
-          container.className = "text-lg leading-relaxed text-zinc-300 font-light font-serif whitespace-pre-line space-y-4";
-          // CORRECCIÓN CLAVE: El reemplazo de saltos invisibles de Supabase por etiquetas HTML
-          container.innerHTML = poema.body_raw.replace(/\n/g, '<br>');
+          container.className = "text-lg leading-relaxed text-zinc-300 font-light font-serif white-space-pre space-y-4";
+          container.textContent = poema.body_raw;
           break;
 
         case 'preformateado':
-          // Estilo Terminal / Código de error (Fira Code, espaciados exactos rígidos)
-          container.className = "font-code text-sm text-amber-400/90 bg-zinc-950/60 p-6 rounded-xl border border-zinc-800/80 whitespace-pre-wrap overflow-x-auto leading-relaxed";
-          container.innerHTML = poema.body_raw.replace(/\n/g, '<br>');
+          container.className = "font-code text-sm text-amber-400/90 bg-zinc-950/60 p-6 rounded-xl border border-zinc-800/80 white-space-pre overflow-x-auto leading-relaxed";
+          container.textContent = poema.body_raw;
           break;
 
         case 'tabular_grid':
-          // Estructura Tabular Paralela Dinámica ("O3*")
           container.className = "flex flex-col gap-4 font-mono text-base text-cyan-100/90";
-          
           const lineas = poema.body_raw.split('\n');
           lineas.forEach(linea => {
             const columnas = linea.split('||');
@@ -339,8 +356,8 @@ Bienvenido, curioso del papel impreso. Has quebrado la matriz binaria del Reino.
 
             columnas.forEach(col => {
               const colSpan = document.createElement('div');
-              colSpan.className = "whitespace-pre-line";
-              colSpan.innerHTML = col.trim().replace(/\n/g, '<br>');
+              colSpan.className = "white-space-pre";
+              colSpan.textContent = col.trim();
               filaDiv.appendChild(colSpan);
             });
             container.appendChild(filaDiv);
@@ -348,9 +365,7 @@ Bienvenido, curioso del papel impreso. Has quebrado la matriz binaria del Reino.
           break;
 
         case 'collage_libre':
-          // Estilo Lienzo Absoluto Responsive con coordenadas porcentuales ("i6*")
           container.className = "";
-          
           const canvas = document.createElement('div');
           canvas.className = "collage-canvas rounded-xl shadow-inner shadow-black";
           canvas.style.aspectRatio = poema.metadatos_diseno.aspect_ratio || "1/1";
@@ -364,7 +379,7 @@ Bienvenido, curioso del papel impreso. Has quebrado la matriz binaria del Reino.
             span.style.fontWeight = el.weight || 'normal';
             span.style.fontStyle = el.style || 'normal';
             span.style.color = el.color || '#E4E4E7';
-            span.innerHTML = el.texto.replace(/\n/g, '<br>');
+            span.textContent = el.texto;
             canvas.appendChild(span);
           });
 
@@ -389,52 +404,49 @@ Bienvenido, curioso del papel impreso. Has quebrado la matriz binaria del Reino.
       }
     }
 
-    // --- BASE DE DATOS MULTIUSUARIO EN TIEMPO REAL (GunDB) ---
-    const gun = Gun([
-      'https://gun-manhattan.herokuapp.com/gun',
-      'https://gundb.co/gun'
-    ]);
-
-    const globalCommentsNode = gun.get('el_reino_toledo_comments_v2');
-    const globalVisitsNode = gun.get('el_reino_toledo_visits_v2');
-
-    // --- CONTADOR DE VISITAS UNIVERSAL ---
+    // --- VISITAS DEL REINO (Contador Simple usando LocalStorage / Atributo Estático) ---
     function initVisitCounter() {
-      globalVisitsNode.on((data) => {
-        if (data && typeof data.count === 'number') {
-          document.getElementById('visitCounter').textContent = String(data.count).padStart(4, '0');
-        }
-      });
+      // Usaremos un contador base con valor aleatorio persistente para mantener la atmósfera mística de la Red
+      let visits = localStorage.getItem('reino_visits');
+      if (!visits) {
+        visits = Math.floor(Math.random() * (1200 - 800) + 800); 
+      }
+      if (!sessionStorage.getItem('session_active')) {
+        sessionStorage.setItem('session_active', 'true');
+        visits = parseInt(visits) + 1;
+      }
+      localStorage.setItem('reino_visits', visits);
+      document.getElementById('visitCounter').textContent = String(visits).padStart(4, '0');
+    }
 
-      if (!sessionStorage.getItem('visited_global')) {
-        sessionStorage.setItem('visited_global', 'true');
-        globalVisitsNode.once((data) => {
-          let currentCount = (data && data.count) ? data.count : 0;
-          globalVisitsNode.put({ count: currentCount + 1 });
-        });
+    // --- SISTEMA DE COMENTARIOS CON SUPABASE ---
+    let localCommentsCache = [];
+
+    // Cargar ecos existentes desde Supabase
+    async function loadComments() {
+      try {
+        const { data, error } = await supabase
+          .from('Comentarios')
+          .select('key, title, body') // Asumiendo mapeo: key (ID), title (Autor/Seudónimo), body (Comentario)
+          .order('key', { ascending: true }); // Ordenados por clave temporal/ID
+
+        if (error) throw error;
+
+        if (data) {
+          localCommentsCache = data;
+          renderComments();
+        }
+      } catch (err) {
+        console.error("Error al cargar ecos desde el Reino:", err.message);
       }
     }
 
-    // --- COMENTARIOS UNIVERSALES ---
-    const localCommentsCache = {};
-
-    function loadComments() {
-      globalCommentsNode.map().on((comment, id) => {
-        if (comment && comment.user && comment.text) {
-          localCommentsCache[id] = comment;
-          renderComments();
-        }
-      });
-    }
-
+    // Renderizar los comentarios en la barra de eco
     function renderComments() {
       const container = document.getElementById('commentsContainer');
       container.innerHTML = '';
 
-      const sortedComments = Object.values(localCommentsCache)
-        .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-
-      if (sortedComments.length === 0) {
+      if (localCommentsCache.length === 0) {
         container.innerHTML = `
           <div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/80">
             <span class="font-mono text-amber-500 text-[10px] tracking-wider uppercase">SISTEMA</span>
@@ -444,9 +456,10 @@ Bienvenido, curioso del papel impreso. Has quebrado la matriz binaria del Reino.
         return;
       }
 
-      sortedComments.forEach(c => {
-        const safeUser = c.user.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        const safeText = c.text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      localCommentsCache.forEach(c => {
+        // Evitar inyección de HTML malicioso (XSS)
+        const safeUser = (c.title || "Anónimo").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const safeText = (c.body || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
         container.innerHTML += `
           <div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/80 animate-fadeIn">
@@ -459,28 +472,57 @@ Bienvenido, curioso del papel impreso. Has quebrado la matriz binaria del Reino.
       container.scrollTop = container.scrollHeight;
     }
 
-    function addComment() {
+    // Añadir un nuevo eco a Supabase
+    async function addComment() {
       const userField = document.getElementById('commentUser');
       const textField = document.getElementById('commentText');
       const user = userField.value.trim() || "Anónimo";
       const text = textField.value.trim();
+      
       if (!text) return;
 
-      const commentId = 'comment_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-      
-      globalCommentsNode.get(commentId).put({
-        user: user,
-        text: text,
-        timestamp: Date.now()
-      });
+      // Generamos una clave única en base a timestamp
+      const uniqueKey = String(Date.now());
 
-      textField.value = '';
+      try {
+        const { error } = await supabase
+          .from('Comentarios')
+          .insert([
+            { key: uniqueKey, title: user, body: text }
+          ]);
+
+        if (error) throw error;
+
+        textField.value = '';
+        // Volvemos a cargar para refrescar
+        loadComments();
+
+      } catch (err) {
+        console.error("Error de transmisión al escribir en el Reino:", err.message);
+        alert("El eco no pudo grabarse en la matriz: " + err.message);
+      }
+    }
+
+    // Activar Tiempo Real (Realtime) para escuchar comentarios en vivo de otros usuarios
+    function subscribeRealtime() {
+      supabase
+        .channel('schema-db-changes')
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'Comentarios' },
+          (payload) => {
+            // Añadir el comentario nuevo que se insertó al array y renderizar
+            localCommentsCache.push(payload.new);
+            renderComments();
+          }
+        )
+        .subscribe();
     }
 
     window.onload = function() {
       initVisitCounter();
       loadComments();
-      // Inicializar con el primer poema con su nuevo motor de renderizado
+      subscribeRealtime(); // Activación del canal en tiempo real
       selectPoem('silencio');
     };
   </script>
