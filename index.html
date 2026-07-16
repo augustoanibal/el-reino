@@ -4,234 +4,398 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EL REINO - Augusto Aníbal Toledo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Source+Serif+4:ital,opsz,wght@300;400;600;700&family=Space+Grotesk:wght@400;700&family=Fira+Code:wght@300;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght=0,400;0,500;1,400&family=Source+Serif+4:ital,opsz,wght=300;400;600;700&family=Space+Grotesk:wght=400;700&family=Fira+Code:wght=300;500&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        serif: ['"Source Serif 4"', 'Lora', 'serif']
+                        serif: ['"Source Serif 4"', 'Lora', 'serif'],
+                        mono: ['"Space Grotesk"', 'monospace'],
+                        code: ['"Fira Code"', 'monospace'],
                     }
                 }
             }
         }
     </script>
-
     <style>
         body { font-family: 'Source Serif 4', serif; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #555; border-radius: 20px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #121212; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #2c2c2c; border-radius: 2px; }
         
-        .poem-content { line-height: 1.9; font-size: 1.1rem; }
-        
+        /* Lienzo absoluto para poemas collage/libres */
         .collage-canvas {
-            position: relative; width: 100%; min-height: 480px;
-            background: radial-gradient(circle at center, rgba(234, 179, 8, 0.08), transparent 70%);
-            border: 1px dashed rgba(234, 179, 8, 0.15);
-            overflow: hidden; border-radius: 16px;
+            position: relative;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px dashed rgba(239, 68, 68, 0.1); /* Delicada línea guía */
+            overflow: hidden;
         }
         .collage-item {
-            position: absolute; transform: translate(-50%, -50%);
-            transition: all 0.7s cubic-bezier(0.4, 0.0, 0.2, 1);
-            text-shadow: 0 2px 12px rgba(0,0,0,0.7);
+            position: absolute;
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+            transition: all 0.3s ease;
         }
-        .collage-item:hover { transform: translate(-50%, -50%) scale(1.12) rotate(3deg); z-index: 20; }
-        @keyframes floatPoem { 0%,100% { transform: translate(-50%, -50%) translateY(0); } 50% { transform: translate(-50%, -50%) translateY(-18px); } }
-        .floating { animation: floatPoem 9s ease-in-out infinite; }
     </style>
 </head>
-<body class="bg-[#0B0B0C] text-[#E4E4E7] min-h-screen">
+<body class="bg-[#0B0B0C] text-[#E4E4E7] selection:bg-amber-950 selection:text-amber-200">
 
-  <header class="h-24 fixed top-0 left-0 right-0 bg-[#0B0B0C]/95 backdrop-blur-md border-b border-zinc-800 z-50">
+  <header class="h-24 fixed top-0 left-0 right-0 bg-[#0B0B0C]/90 backdrop-blur-md border-b border-zinc-800/80 z-50">
     <div class="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
       <div class="flex items-center gap-4">
-        <span class="font-mono text-amber-500 tracking-widest text-xs border border-amber-500/30 px-2 py-1 rounded">PORTAL ACTIVO</span>
+        <span class="font-mono text-amber-500 tracking-widest text-xs border border-amber-500/30 px-2 py-1 rounded">PORTAL: ACTIVO</span>
         <div>
-          <h1 class="text-2xl font-light tracking-[0.25em] uppercase">EL REINO</h1>
-          <p class="text-[10px] font-mono text-zinc-500">Augusto Aníbal Toledo • 2008-2026</p>
+          <h1 class="text-2xl font-light tracking-[0.2em] uppercase text-zinc-100">El Reino</h1>
+          <p class="text-[9px] font-mono text-zinc-500 tracking-wider">OBRA POÉTICA COMPLETA (2008 - 2026)</p>
         </div>
       </div>
-      <button onclick="toggleView()" id="viewBtn"
-              class="px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-xl text-sm font-mono flex items-center gap-2 transition-all">
-        <i class="fa-solid fa-grip"></i>
-        <span id="viewText">MALLA</span>
-      </button>
+      
+      <div class="flex items-center gap-4">
+        <button onclick="toggleView()" id="viewBtn"
+                class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-xs font-mono tracking-wider transition-colors flex items-center gap-2">
+          <i class="fa-solid fa-circle-nodes text-amber-500"></i>
+          <span id="viewText">VER SECCIONES</span>
+        </button>
+      </div>
     </div>
   </header>
 
-  <div class="pt-24 flex min-h-[calc(100vh-6rem)]">
-    
-    <div id="gridView" class="hidden flex-1 p-8">
-      <div id="poemsGrid" class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div class="pt-24">
+
+    <div id="gridView" class="hidden p-8 animate-fadeIn">
+      <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <div class="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl hover:border-emerald-500/40 transition-all cursor-pointer group" onclick="selectPoem('extramuros_orilla')">
+          <div class="font-mono text-xs text-emerald-500 mb-2">PRIMAVERA EXTRAMUROS (2018)</div>
+          <h3 class="text-xl font-bold text-zinc-100 group-hover:text-emerald-400 transition-colors">Orilla (primer paso)</h3>
+          <p class="text-zinc-500 text-sm mt-2 line-clamp-2 italic">Lirismo inicial, juegos de tensión espacial en blanco.</p>
         </div>
+
+        <div class="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl hover:border-cyan-500/40 transition-all cursor-pointer group" onclick="selectPoem('orbita_o3')">
+          <div class="font-mono text-xs text-cyan-400 mb-2">ÓRBITA ROTA (2019)</div>
+          <h3 class="text-xl font-bold text-zinc-100 group-hover:text-cyan-400 transition-colors">O3*</h3>
+          <p class="text-zinc-500 text-sm mt-2 line-clamp-2 italic">Estructura de lectura multiaxial en columnas simétricas.</p>
+        </div>
+
+        <div class="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl hover:border-rose-500/40 transition-all cursor-pointer group" onclick="selectPoem('orbita_i6')">
+          <div class="font-mono text-xs text-rose-400 mb-2">ÓRBITA ROTA (2019)</div>
+          <h3 class="text-xl font-bold text-zinc-100 group-hover:text-rose-400 transition-colors">i6*</h3>
+          <p class="text-zinc-500 text-sm mt-2 line-clamp-2 italic">Deconstrucción matemática en collage sobre lienzo.</p>
+        </div>
+
+        <div class="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl hover:border-amber-500/40 transition-all cursor-pointer group" onclick="selectPoem('silencio')">
+          <div class="font-mono text-xs text-amber-500 mb-2">EL REINO - SECCIÓN I</div>
+          <h3 class="text-xl font-bold text-zinc-100 group-hover:text-amber-400 transition-colors">El silencio es lo que hay</h3>
+          <p class="text-zinc-500 text-sm mt-2 line-clamp-2 italic">Estética del asfalto y la contemplación urbana.</p>
+        </div>
+
+      </div>
     </div>
 
-    <div id="readView" class="flex flex-1">
-      <main class="flex-1 overflow-y-auto p-8 lg:p-16">
-        <div class="max-w-3xl mx-auto" id="poemWrapper">
-          <div id="poemMetadataHeader" class="mb-10 flex justify-between items-center text-xs font-mono border-b border-zinc-800 pb-6">
-            <span id="poemBookLabel" class="text-amber-500">Cargando Libro...</span>
-            <span id="poemRenderBadge" class="text-zinc-500">render: estándar</span>
+    <div id="readView" class="flex min-h-[calc(100vh-6rem)]">
+      
+      <main class="flex-1 overflow-y-auto p-10 lg:p-16 flex justify-center items-start">
+        <div class="max-w-3xl w-full" id="poemWrapper">
+          
+          <div id="poemMetadataHeader" class="mb-8 font-mono text-xs border-b border-zinc-800/40 pb-4 flex justify-between items-center">
+             <span id="poemBookLabel" class="text-amber-500 uppercase tracking-widest font-bold">EL REINO</span>
+             <span id="poemRenderBadge" class="text-zinc-500 border border-zinc-800 px-2 py-0.5 rounded text-[10px]">render: estandar</span>
           </div>
-          <h2 id="poemTitle" class="text-4xl font-light tracking-wide mb-10">Cargando poema...</h2>
-          <div id="poemBodyContainer" class="poem-content text-zinc-300 whitespace-pre-wrap"></div>
+
+          <div id="poemContent" class="space-y-6">
+            <h2 id="poemTitle" class="text-3xl lg:text-4xl font-light tracking-wide text-zinc-100 uppercase">EL SILENCIO ES LO QUE HAY</h2>
+            
+            <div id="poemBodyContainer" class="text-lg leading-relaxed text-zinc-300 font-light">
+               </div>
+          </div>
+
         </div>
       </main>
 
-      <aside class="w-full lg:w-96 border-l border-zinc-800 bg-[#0E0E10] flex flex-col">
-        <div class="p-6 border-b border-zinc-800">
-          <div class="bg-zinc-950 border border-amber-500/20 rounded-2xl p-5 text-center">
-            <span class="text-xs font-mono text-zinc-400">HABITANTES EN EL REINO</span>
-            <div id="visitCounter" class="font-mono text-4xl font-bold text-amber-500 mt-2">0000</div>
+      <aside class="w-96 border-l border-zinc-800 bg-[#0E0E10] hidden lg:flex flex-col justify-between h-[calc(100vh-6rem)] sticky top-24">
+        
+        <div class="p-6 border-b border-zinc-800/60">
+          <div class="flex items-center justify-between mb-6 p-4 bg-zinc-950 border border-zinc-800 rounded-xl">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+              <span class="font-mono text-xs text-zinc-400">Habitantes en la red:</span>
+            </div>
+            <span id="visitCounter" class="font-mono text-sm font-bold text-amber-500">0000</span>
+          </div>
+
+          <div class="p-4 bg-black border border-amber-500/20 rounded-xl">
+            <h4 class="font-mono text-xs text-amber-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+              <i class="fa-solid fa-terminal"></i> TERMINAL SOFONÍAS
+            </h4>
+            <p class="text-zinc-500 text-[11px] mb-3 font-mono">Introduce un código binario del libro para romper el cifrado:</p>
+            <div class="flex gap-2">
+              <input type="text" id="binaryInput" placeholder="Ej: 00001010" 
+                     class="flex-1 bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-xs font-mono text-amber-400 focus:outline-none focus:border-amber-500">
+              <button onclick="decodeBinary()" class="bg-amber-600 hover:bg-amber-700 text-black font-mono text-xs font-bold px-3 py-1 rounded transition-colors">
+                DESCIFRAR
+              </button>
+            </div>
+            <div id="binaryResult" class="mt-3 text-xs font-mono text-zinc-400 hidden p-2 bg-zinc-900 rounded border border-zinc-800"></div>
           </div>
         </div>
-        
-        <div class="flex-1 flex flex-col min-h-0 p-6">
-          <h3 class="font-mono text-xs tracking-widest text-amber-500 mb-4 flex items-center gap-2">
-            <i class="fa-regular fa-comment-dots"></i> ECO DE LOS VISITANTES
+
+        <div class="p-6 flex-1 flex flex-col min-h-0 bg-zinc-950/40">
+          <h3 class="font-mono text-xs tracking-wider text-zinc-400 mb-3 flex items-center gap-2">
+            <i class="fa-regular fa-comment-dots text-amber-500"></i> ECO DE LOS VISITANTES (GLOBAL)
           </h3>
-          <div id="commentsContainer" class="flex-1 overflow-y-auto space-y-4 custom-scrollbar pr-2"></div>
           
-          <div class="mt-6 space-y-3">
-            <input id="commentUser" type="text" placeholder="Tu seudónimo" 
-                   class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500/50 text-white">
+          <div id="commentsContainer" class="flex-1 overflow-y-auto space-y-3 mb-4 pr-1 text-xs font-light custom-scrollbar"></div>
+
+          <div class="mt-auto space-y-2">
+            <input type="text" id="commentUser" placeholder="Seudónimo..." 
+                   class="w-full px-3 py-2 text-xs bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-amber-500/50 font-mono">
             <div class="relative">
-              <textarea id="commentText" rows="3" placeholder="Escribe tu eco..." 
-                        class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:border-amber-500/50 text-white"></textarea>
-              <button onclick="addComment()" 
-                      class="absolute bottom-4 right-4 text-amber-500 hover:text-amber-400">
-                <i class="fa-solid fa-paper-plane"></i>
+              <textarea id="commentText" placeholder="Escribe tu eco en el Reino..." rows="2"
+                        class="w-full pl-3 pr-10 py-2 text-xs bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-amber-500/50 resize-none"></textarea>
+              <button onclick="addComment()" class="absolute right-2 bottom-3 text-amber-500 hover:text-amber-400 p-1">
+                <i class="fa-solid fa-paper-plane text-xs"></i>
               </button>
             </div>
           </div>
         </div>
+
       </aside>
     </div>
   </div>
 
   <script>
-    const supabase = window.supabase.createClient(
-      "https://kpvucfktjnuqltuvgflx.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwdnVjZmt0am51cWx0dXZnZmx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjk5MzIsImV4cCI6MjA5OTcwNTkzMn0.qV51Slxgz9pRnlGzLQB404SybQz4gOkDIbwSFnNxD-Q"
-    );
-
     let isGrid = false;
-    let poemsData = [];
-    let localCommentsCache = [];
 
-    // --- CARGAR POEMAS ---
-    async function loadPoems() {
-      try {
-        const { data, error } = await supabase
-          .from('poemas')
-          .select('key, title, body, book')
-          .order('key', { ascending: true }); // Ordenados por su identificador numérico/key
+    // --- CONFIGURACIÓN DE SUPABASE ---
+    const SUPABASE_URL = "https://kpvucfktjnuqltuvgflx.supabase.co"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwdnVjZmt0am51cWx0dXZnZmx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjk5MzIsImV4cCI6MjA5OTcwNTkzMn0.qV51Slxgz9pRnlGzLQB404SybQz4gOkDIbwSFnNxD-Q";     
 
-        if (error) throw error;
-        poemsData = data || [];
-        renderGrid();
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        if (poemsData.length > 0) {
-          selectPoem(poemsData[0]);
-        } else {
-          document.getElementById('poemTitle').textContent = "Vacío";
-          document.getElementById('poemBodyContainer').textContent = "No hay poemas en la base de datos.";
-          document.getElementById('poemBookLabel').textContent = "SISTEMA";
-        }
-      } catch (err) {
-        console.error("Error al cargar poemas:", err);
-        document.getElementById('poemTitle').textContent = "Error de Conexión";
-        document.getElementById('poemBodyContainer').textContent = "Revisa los permisos RLS en Supabase para la tabla 'poemas'.";
-      }
-    }
-
-    function renderGrid() {
-      const grid = document.getElementById('poemsGrid');
-      grid.innerHTML = poemsData.map(poem => `
-        <div class="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl hover:border-amber-500/50 cursor-pointer group transition-all" onclick='selectPoemFromData("${poem.key}")'>
-          <div class="font-mono text-xs text-amber-500">${poem.book || 'EL REINO'}</div>
-          <h3 class="text-xl font-light mt-2 group-hover:text-amber-400">${poem.title}</h3>
-        </div>
-      `).join('');
-    }
+    // El catálogo se llenará de forma interactiva con los datos de Supabase
+    let catalog = {};
 
     function toggleView() {
       isGrid = !isGrid;
       document.getElementById('gridView').classList.toggle('hidden', !isGrid);
       document.getElementById('readView').classList.toggle('hidden', isGrid);
-      document.getElementById('viewText').textContent = isGrid ? 'LECTURA' : 'MALLA';
+      document.getElementById('viewText').textContent = isGrid ? 'VISTA LECTURA' : 'VER SECCIONES';
     }
 
-    function selectPoem(poem) {
-      if (isGrid) toggleView();
-      document.getElementById('poemTitle').textContent = poem.title;
-      document.getElementById('poemBookLabel').textContent = poem.book || 'EL REINO';
-      document.getElementById('poemBodyContainer').textContent = poem.body || "Sin contenido";
-    }
+    // --- ARQUITECTO DE RENDERIZADO ADAPTATIVO (Frontend Engine) ---
+    function selectPoem(key) {
+      const poema = catalog[key];
+      if (!poema) return;
 
-    window.selectPoemFromData = (key) => {
-      const poem = poemsData.find(p => String(p.key) === String(key));
-      if (poem) selectPoem(poem);
-    };
+      isGrid = false;
+      document.getElementById('gridView').classList.add('hidden');
+      document.getElementById('readView').classList.remove('hidden');
+      
+      // 1. Renderizar Cabecera de Metadatos
+      document.getElementById('poemBookLabel').textContent = poema.book_title;
+      document.getElementById('poemBookLabel').className = `font-mono text-xs uppercase tracking-widest ${
+        poema.book === 'primavera-extramuros' ? 'text-emerald-500' :
+        poema.book === 'orbita-rota' ? 'text-cyan-400' : 'text-amber-500'
+      }`;
+      document.getElementById('poemRenderBadge').textContent = `render: ${poema.tipo_render}`;
 
-    // --- CONTADOR DE VISITAS ATMOSFÉRICO ---
-    function initVisitCounter() {
-      let visits = localStorage.getItem('reino_visits');
-      if (!visits) {
-        visits = Math.floor(Math.random() * (1200 - 800) + 800); 
+      // 2. Renderizar Título del Poema
+      document.getElementById('poemTitle').textContent = poema.title;
+
+      // 3. Renderizado Dinámico del Cuerpo segun el "tipo_render"
+      const container = document.getElementById('poemBodyContainer');
+      container.innerHTML = ''; // Limpiamos el contenedor
+
+      switch (poema.tipo_render) {
+        
+        case 'estandar':
+          container.className = "text-lg leading-relaxed text-zinc-300 font-light font-serif whitespace-pre-line space-y-4";
+          // Reemplazo de los saltos de línea para que se vean adecuadamente en HTML
+          container.innerHTML = poema.body_raw.replace(/\\n/g, '<br>');
+          break;
+
+        case 'preformateado':
+          container.className = "font-code text-sm text-amber-400/90 bg-zinc-950/60 p-6 rounded-xl border border-zinc-800/80 whitespace-pre-wrap overflow-x-auto leading-relaxed";
+          container.innerHTML = poema.body_raw.replace(/\\n/g, '<br>');
+          break;
+
+        case 'tabular_grid':
+          container.className = "flex flex-col gap-4 font-mono text-base text-cyan-100/90";
+          
+          const lineas = poema.body_raw.split('\\n');
+          lineas.forEach(linea => {
+            const columnas = linea.split('||');
+            const filaDiv = document.createElement('div');
+            
+            if (poema.metadatos_diseno.mobile_stack) {
+              filaDiv.className = "flex flex-col md:grid md:grid-cols-2 gap-4 border-l-2 border-zinc-800 md:border-l-0 pl-3 md:pl-0";
+            } else {
+              filaDiv.className = "grid grid-cols-2 gap-4";
+            }
+
+            columnas.forEach(col => {
+              const colSpan = document.createElement('div');
+              colSpan.className = "whitespace-pre-line";
+              colSpan.innerHTML = col.trim().replace(/\\n/g, '<br>');
+              filaDiv.appendChild(colSpan);
+            });
+            container.appendChild(filaDiv);
+          });
+          break;
+
+        case 'collage_libre':
+          container.className = "";
+          
+          const canvas = document.createElement('div');
+          canvas.className = "collage-canvas rounded-xl shadow-inner shadow-black";
+          canvas.style.aspectRatio = poema.metadatos_diseno.aspect_ratio || "1/1";
+
+          if (poema.metadatos_diseno.elementos) {
+            poema.metadatos_diseno.elementos.forEach(el => {
+              const span = document.createElement('span');
+              span.className = `collage-item ${el.font || 'font-serif'}`;
+              span.style.left = `${el.x}%`;
+              span.style.top = `${el.y}%`;
+              span.style.fontSize = el.size || '1rem';
+              span.style.fontWeight = el.weight || 'normal';
+              span.style.fontStyle = el.style || 'normal';
+              span.style.color = el.color || '#E4E4E7';
+              span.innerHTML = el.texto.replace(/\\n/g, '<br>');
+              canvas.appendChild(span);
+            });
+          }
+
+          container.appendChild(canvas);
+          break;
       }
-      if (!sessionStorage.getItem('session_active')) {
-        sessionStorage.setItem('session_active', 'true');
-        visits = parseInt(visits) + 1;
-      }
-      localStorage.setItem('reino_visits', visits);
-      document.getElementById('visitCounter').textContent = String(visits).padStart(4, '0');
     }
 
-    // --- CARGAR COMENTARIOS (CORREGIDO CON TUS COLUMNAS REALES) ---
-    async function loadComments() {
+    // --- ACCESO A SUPABASE ---
+    async function fetchPoemsFromSupabase() {
       try {
-        const { data, error } = await supabase
-          .from('Comentarios')
-          .select('id, user, text, created_at')
-          .order('created_at', { ascending: true }); // Orden cronológico usando la columna que tienes
+        const { data, error } = await supabaseClient
+          .from('poemas')
+          .select('*');
 
         if (error) throw error;
 
-        if (data) {
-          localCommentsCache = data;
+        const nuevoCatalogo = {};
+        data.forEach(poema => {
+          nuevoCatalogo[poema.key] = {
+            title: poema.title,
+            book: poema.book,
+            book_title: poema.book_title,
+            tipo_render: poema.tipo_render,
+            body_raw: poema.body_raw,
+            metadatos_diseno: typeof poema.metadatos_diseno === 'string' 
+              ? JSON.parse(poema.metadatos_diseno) 
+              : (poema.metadatos_diseno || {})
+          };
+        });
+
+        catalog = nuevoCatalogo;
+        console.log("Poemas cargados con éxito desde Supabase:", catalog);
+
+        // Renderizar el primer poema en pantalla
+        if (catalog['silencio']) {
+          selectPoem('silencio');
+        } else {
+          const keys = Object.keys(catalog);
+          if (keys.length > 0) selectPoem(keys[0]);
+        }
+
+      } catch (err) {
+        console.error("Error al conectar con Supabase:", err.message);
+      }
+    }
+
+    function decodeBinary() {
+      const input = document.getElementById('binaryInput').value.trim();
+      const resultDiv = document.getElementById('binaryResult');
+      resultDiv.classList.remove('hidden');
+      
+      if (input === "0000000100101010") {
+        resultDiv.innerHTML = `<span class="text-cyan-400">✓ TRANSMISIÓN ENCONTRADA:</span> Abriendo fragmento de Sofonías...`;
+        selectPoem('sofonias_1');
+      } else if (input === "00001010") {
+        resultDiv.innerHTML = `<span class="text-amber-400">⚡ EPÍGRAFE DESBLOQUEADO:</span> Has accedido a la raíz de la memoria.`;
+        selectPoem('epigrafe_oculto');
+      } else {
+        resultDiv.innerHTML = `<span class="text-red-400">✗ ERROR DE FLUJO:</span> Código ausente en la memoria de Sofonías.`;
+      }
+    }
+
+    // --- BASE DE DATOS MULTIUSUARIO EN TIEMPO REAL (GunDB) ---
+    const gun = Gun([
+      'https://gun-manhattan.herokuapp.com/gun',
+      'https://gundb.co/gun'
+    ]);
+
+    const globalCommentsNode = gun.get('el_reino_toledo_comments_v2');
+    const globalVisitsNode = gun.get('el_reino_toledo_visits_v2');
+
+    // --- CONTADOR DE VISITAS UNIVERSAL ---
+    function initVisitCounter() {
+      globalVisitsNode.on((data) => {
+        if (data && typeof data.count === 'number') {
+          document.getElementById('visitCounter').textContent = String(data.count).padStart(4, '0');
+        }
+      });
+
+      if (!sessionStorage.getItem('visited_global')) {
+        sessionStorage.setItem('visited_global', 'true');
+        globalVisitsNode.once((data) => {
+          let currentCount = (data && data.count) ? data.count : 0;
+          globalVisitsNode.put({ count: currentCount + 1 });
+        });
+      }
+    }
+
+    // --- COMENTARIOS UNIVERSALES ---
+    const localCommentsCache = {};
+
+    function loadComments() {
+      globalCommentsNode.map().on((comment, id) => {
+        if (comment && comment.user && comment.text) {
+          localCommentsCache[id] = comment;
           renderComments();
         }
-      } catch (err) {
-        console.error("Error al cargar comentarios:", err.message);
-      }
+      });
     }
 
     function renderComments() {
       const container = document.getElementById('commentsContainer');
       container.innerHTML = '';
 
-      if (localCommentsCache.length === 0) {
+      const sortedComments = Object.values(localCommentsCache)
+        .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+      if (sortedComments.length === 0) {
         container.innerHTML = `
-          <div class="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800/80 text-center text-zinc-500 text-xs">
-            Aún no hay ecos. Rompe el silencio...
+          <div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/80">
+            <span class="font-mono text-amber-500 text-[10px] tracking-wider uppercase">SISTEMA</span>
+            <p class="text-zinc-300 mt-1 font-sans">No hay ecos en la red aún. Sé el primero en escribir...</p>
           </div>
         `;
         return;
       }
 
-      localCommentsCache.forEach(c => {
-        const safeUser = (c.user || "Anónimo").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        const safeText = (c.text || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      sortedComments.forEach(c => {
+        const safeUser = c.user.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const safeText = c.text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
         container.innerHTML += `
-          <div class="bg-zinc-900/60 p-4 rounded-xl border border-zinc-800/60 transition-all">
-            <span class="font-mono text-amber-500 text-[10px] tracking-widest uppercase">${safeUser}</span>
-            <p class="text-zinc-300 mt-1.5 font-sans leading-relaxed text-sm">${safeText}</p>
+          <div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/80 animate-fadeIn">
+            <span class="font-mono text-amber-500 text-[10px] tracking-wider uppercase">${safeUser}</span>
+            <p class="text-zinc-300 mt-1 font-sans">${safeText}</p>
           </div>
         `;
       });
@@ -239,56 +403,29 @@
       container.scrollTop = container.scrollHeight;
     }
 
-    // --- ENVIAR COMENTARIO (CORREGIDO CON TUS COLUMNAS REALES) ---
-    async function addComment() {
+    function addComment() {
       const userField = document.getElementById('commentUser');
       const textField = document.getElementById('commentText');
-      const username = userField.value.trim() || "Anónimo";
-      const commentContent = textField.value.trim();
+      const user = userField.value.trim() || "Anónimo";
+      const text = textField.value.trim();
+      if (!text) return;
+
+      const commentId = 'comment_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
       
-      if (!commentContent) return;
+      globalCommentsNode.get(commentId).put({
+        user: user,
+        text: text,
+        timestamp: Date.now()
+      });
 
-      // Generar una ID temporal numérica única para evitar colisiones
-      const numericId = Math.floor(Date.now() / 1000); 
-
-      try {
-        const { error } = await supabase
-          .from('Comentarios')
-          .insert([{ id: numericId, user: username, text: commentContent }]);
-
-        if (error) throw error;
-
-        textField.value = '';
-        loadComments(); // Recarga la lista de comentarios tras guardar con éxito
-      } catch (err) {
-        console.error("Error al transmitir el eco:", err.message);
-        alert("El eco no pudo enviarse. Recuerda habilitar la política RLS 'INSERT' para la tabla Comentarios.");
-      }
+      textField.value = '';
     }
 
-    // Suscripción Realtime para los comentarios
-    function subscribeRealtime() {
-      supabase
-        .channel('schema-db-changes')
-        .on(
-          'postgres_changes',
-          { event: 'INSERT', schema: 'public', table: 'Comentarios' },
-          (payload) => {
-            if (!localCommentsCache.some(c => c.id === payload.new.id)) {
-              localCommentsCache.push(payload.new);
-              renderComments();
-            }
-          }
-        )
-        .subscribe();
-    }
-
-    // --- CARGAR AL INICIAR ---
-    window.onload = () => {
+    // --- CARGA INICIAL ---
+    window.onload = function() {
       initVisitCounter();
-      loadPoems();
       loadComments();
-      subscribeRealtime();
+      fetchPoemsFromSupabase(); // Se conecta a Supabase y renderiza el primer poema cargado
     };
   </script>
 </body>
