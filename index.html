@@ -152,7 +152,7 @@
           <h4 class="font-mono text-xs text-amber-500 uppercase tracking-widest mb-2 flex items-center gap-2">
             <i class="fa-solid fa-code"></i> TERMINAL SOFONÍAS
           </h4>
-          <p class="text-zinc-500 text-[11px] mb-3 font-mono">Introduce un código binario del libro físico para romper el cifrado:</p>
+          <p class="text-zinc-500 text-[11px] mb-3 font-mono">Introduce los ocho dígitos del código binario del libro físico para romper el cifrado:</p>
           <div class="flex gap-2">
             <input type="text" id="binaryInput" placeholder="Ej: 00001010"
                    class="flex-1 bg-zinc-900 border border-zinc-800 rounded px-3 py-2 text-xs font-mono text-amber-400 focus:outline-none focus:border-amber-500">
@@ -189,7 +189,6 @@
   </div>
 
   <script>
-    // ESTADOS: 'grid' (Secciones), 'read' (Lectura), 'terminal' (Terminal & Comentarios)
     let activeView = 'read'; 
     const SUPABASE_URL = "https://kpvucfktjnuqltuvgflx.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwdnVjZmt0am51cWx0dXZnZmx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjk5MzIsImV4cCI6MjA5OTcwNTkzMn0.qV51Slxgz9pRnlGzLQB404SybQz4gOkDIbwSFnNxD-Q";
@@ -204,7 +203,6 @@
       document.getElementById('readView').classList.toggle('hidden', activeView !== 'read');
       document.getElementById('terminalView').classList.toggle('hidden', activeView !== 'terminal');
       
-      // Actualización visual de los botones superiores
       const gridBtn = document.getElementById('gridNavBtn');
       const termBtn = document.getElementById('terminalNavBtn');
       
@@ -221,7 +219,6 @@
     }
     
     function toggleView() {
-      // Función remanente para fallback
       changeActiveView(activeView === 'grid' ? 'read' : 'grid');
     }
 
@@ -474,20 +471,48 @@
       'https://gundb.co/gun'
     ]);
     const globalCommentsNode = gun.get('el_reino_toledo_comments_v2');
-    const globalVisitsNode = gun.get('el_reino_toledo_visits_v2');
     
-    function initVisitCounter() {
-      globalVisitsNode.on((data) => {
-        if (data && typeof data.count === 'number') {
-          document.getElementById('visitCounter').textContent = String(data.count).padStart(4, '0');
+    // NUEVA FUNCIÓN DEL CONTADOR CON SUPABASE (GLOBAL Y REALTIME)
+    async function initVisitCounter() {
+      try {
+        // 1. Leer valor actual de la tabla 'Contador' fila 1
+        let { data, error } = await supabaseClient
+          .from('Contador')
+          .select('visitas')
+          .eq('id', 1)
+          .single();
+
+        if (error) throw error;
+        let totalVisitas = data ? data.visitas : 0;
+
+        // 2. Si es una nueva sesión de navegación en esta pestaña, sumamos 1
+        if (!sessionStorage.getItem('visited_global')) {
+          sessionStorage.setItem('visited_global', 'true');
+          totalVisitas = totalVisitas + 1;
+
+          // Guardar el nuevo valor en la base de datos centralizada
+          await supabaseClient
+            .from('Contador')
+            .update({ visitas: totalVisitas })
+            .eq('id', 1);
         }
-      });
-      if (!sessionStorage.getItem('visited_global')) {
-        sessionStorage.setItem('visited_global', 'true');
-        globalVisitsNode.once((data) => {
-          let currentCount = (data && data.count) ? data.count : 0;
-          globalVisitsNode.put({ count: currentCount + 1 });
-        });
+
+        // Pintar las visitas iniciales formateadas
+        document.getElementById('visitCounter').textContent = String(totalVisitas).padStart(4, '0');
+
+        // 3. Escuchar en tiempo real por si otra persona entra al mismo tiempo
+        supabaseClient
+          .channel('cambios-contador')
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'Contador', filter: 'id=eq.1' }, payload => {
+            if (payload.new && typeof payload.new.visitas === 'number') {
+              document.getElementById('visitCounter').textContent = String(payload.new.visitas).padStart(4, '0');
+            }
+          })
+          .subscribe();
+
+      } catch (err) {
+        console.error("Error en el contador de Supabase:", err.message);
+        document.getElementById('visitCounter').textContent = "0001";
       }
     }
     
@@ -562,7 +587,7 @@
       initVisitCounter();
       loadComments();
       fetchPoemsFromSupabase();
-      changeActiveView('read'); // Inicia por defecto en vista lectura limpia
+      changeActiveView('read');
     };
   </script>
 </body>
