@@ -148,7 +148,7 @@
             Su activa participación en el ecosistema cultural lo ha llevado a ser jurado para el Ministerio de Cultura, Gobiernos Regionales y UGELs de Arequipa y Tacna en certámenes como el Concurso Nacional de Oratoria (2024), PERÚ LEE (2023), el Premio José María Arguedas (2021 y 2023) y Poeta Joven (2018-2019).
           </p>
           <p class="text-justify">
-            Como poeta, obtuvo el primer puesto en los concursos Casa Basadre (2008) y Casa Zela (2009), y que años después decidió publicar los títulos de los poemarios Primavera Extramuros (2018), Órbita Rota (2019) y Los Extramuros (2024). Además, ha colaborado en las revistas Cinosargo, Groenlandia y Delirium Tremens, y fue integrado en la antología Buganvilla (2015).
+            Como poeta, obtuvo el primer puesto en los concursos Casa Basadre (2008) y Casa Zela (2009), y que many años después decidió publicar los títulos de los poemarios Primavera Extramuros (2018), Órbita Rota (2019) y Los Extramuros (2024). Además, ha colaborado en las revistas Cinosargo, Groenlandia y Delirium Tremens, y fue integrado en la antología Buganvilla (2015).
           </p>
           <p class="text-justify">
             Siempre dispuesto a compartir saberes, vuelca su experiencia en espacios académicos y de divulgación; en 2024, dictó charlas y talleres en el FESTILEC, el Centro Cultural Liber Forti y la Universidad Nacional Jorge Basadre Grohmann (bajo Resolución N°8149-2024-FECH). Esta labor formativa se complementa con el diseño de talleres de creación de textos desde 2018 y su constante participación en encuentros poéticos como los recitales.
@@ -168,7 +168,7 @@
           </div>
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-            <span class="font-mono text-xs text-zinc-500">HABITANTES: <span id="visitCounter" class="text-amber-500 font-bold">00000000</span></span>
+            <span class="font-mono text-xs text-zinc-500">HABITANTES: <span id="visitCounter" class="text-amber-500 font-bold">00000050</span></span>
           </div>
         </div>
 
@@ -211,9 +211,6 @@
     </div>
   </div>
 
-  <!-- SCRIPT EXTERNO DEL CONTADOR -->
-  <script type="text/javascript" src="https://contador.websiteout.com/js/9/10/50/0"></script>
-
   <script>
     let activeView = 'read'; 
     const SUPABASE_URL = "https://kpvucfktjnuqltuvgflx.supabase.co";
@@ -229,24 +226,44 @@
         loadComments();
     });
 
-    function initVisitCounter() {
-      // Intentar extraer el número de visitas desde la variable global generada por el script de websiteout
-      // Normalmente estos servicios guardan el valor en variables internas. Si no está mapeado, se usa un fallback seguro.
-      let totalVisitas = 50; 
-      
-      if (typeof window['hit_counter'] !== 'undefined') {
-        totalVisitas = Number(window['hit_counter']);
-      } else if (typeof window['counter'] !== 'undefined') {
-        totalVisitas = Number(window['counter']);
-      } else {
-        // Fallback dinámico: Busca elementos que el script externo suele inyectar de forma implícita
-        const exElement = document.getElementById('websiteout_counter');
-        if (exElement) totalVisitas = parseInt(exElement.textContent, 10) || 50;
+    async function initVisitCounter() {
+      try {
+        let { data, error } = await supabaseClient
+          .from('Contador')
+          .select('visitas')
+          .eq('id', 1)
+          .single();
+
+        if (error) throw error;
+        
+        let totalVisitas = data && data.visitas >= 50 ? data.visitas : 50;
+
+        if (!localStorage.getItem('visited_global_user')) {
+          localStorage.setItem('visited_global_user', 'true');
+          totalVisitas = totalVisitas + 1;
+
+          await supabaseClient
+            .from('Contador')
+            .update({ visitas: totalVisitas })
+            .eq('id', 1);
+        }
+
+        document.getElementById('visitCounter').textContent = String(totalVisitas).padStart(8, '0');
+
+        supabaseClient
+          .channel('cambios-contador')
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'Contador', filter: 'id=eq.1' }, payload => {
+            if (payload.new && typeof payload.new.visitas === 'number') {
+              let realtimeVisitas = payload.new.visitas < 50 ? 50 : payload.new.visitas;
+              document.getElementById('visitCounter').textContent = String(realtimeVisitas).padStart(8, '0');
+            }
+          })
+          .subscribe();
+
+      } catch (err) {
+        console.error("Error en el contador de Supabase:", err.message);
+        document.getElementById('visitCounter').textContent = "00000050";
       }
-      
-      // Asegurar un piso mínimo de 50 y formatear a 8 dígitos
-      if (isNaN(totalVisitas) || totalVisitas < 50) totalVisitas = 50;
-      document.getElementById('visitCounter').textContent = String(totalVisitas).padStart(8, '0');
     }
 
     async function loadComments() {
@@ -456,20 +473,6 @@
       container.innerHTML = ''; 
       
       switch (renderActual) {
-        case 'narrativa':
-          container.className = "text-lg leading-relaxed text-zinc-300 font-serif text-justify space-y-4 animate-fadeIn";
-          const parrafos = rawText.split(/\\n|\n/);
-          container.innerHTML = parrafos
-            .map((p, index) => {
-              if (!p.trim()) return '<div class="h-4"></div>';
-              if (index === 0) {
-                return `<p class="first-letter:text-5xl first-letter:font-bold first-letter:text-amber-500 first-letter:float-left first-letter:mr-3 first-letter:mt-1">${p.trim()}</p>`;
-              }
-              return `<p>${p.trim()}</p>`;
-            })
-            .join('');
-          break;
-
         case 'estandar':
         case 'tradicional':
           container.className = "text-lg leading-normal text-zinc-300 font-light font-serif whitespace-normal space-y-1.5 animate-fadeIn";
@@ -608,26 +611,67 @@
         dibujarGridDePoemas();
         
         if (catalog['silencio']) {
-            selectPoem('silencio');
+          selectPoem('silencio');
         } else {
-            const keys = Object.keys(catalog);
-            if (keys.length > 0) selectPoem(keys[0]);
+          const keys = Object.keys(catalog);
+          if (keys.length > 0) selectPoem(keys[0]);
         }
+
       } catch (err) {
-        console.error("Error al obtener poemas desde Supabase:", err.message);
+        console.error("Error cargando poemas desde Supabase:", err.message);
       }
     }
-    
-    // Función Stub por si se llama desde la interfaz el descifrado binario
-    function decodeBinary() {
-      const input = document.getElementById('binaryInput').value.trim();
+
+    // =================================================================
+    // ENTRADA DIRECTA AL DESCIFRAR EL CÓDIGO (SIN PASO INTERMEDIO)
+    // =================================================================
+    async function decodeBinary() {
+      const codeInput = document.getElementById('binaryInput').value.trim();
       const resultDiv = document.getElementById('binaryResult');
-      resultDiv.classList.remove('hidden');
-      if(!input) {
-        resultDiv.textContent = "Por favor ingrese un código.";
-        return;
+      
+      if (!codeInput) return;
+      
+      try {
+        const { data, error } = await supabaseClient
+          .from('poemas')
+          .select('*')
+          .eq('binary_code', codeInput);
+          
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          const poemaOculto = data[0];
+          
+          // Guardamos temporalmente el poema descifrado en el catálogo global de renderizado
+          catalog[poemaOculto.key] = {
+            title: poemaOculto.titulo,
+            book: poemaOculto.book,
+            book_title: poemaOculto.book,
+            tipo_render: poemaOculto.tipo_render,
+            body_raw: poemaOculto.contenido,
+            binary_code: poemaOculto.binary_code,
+            is_hidden: poemaOculto.is_hidden,
+            metadatos_diseno: typeof poemaOculto.metadatos_diseno === 'string'
+              ? JSON.parse(poemaOculto.metadatos_diseno)
+              : poemaOculto.metadatos_diseno
+          };
+          
+          // Limpiamos la vista de terminal y saltamos directo a la lectura completa
+          document.getElementById('binaryInput').value = '';
+          resultDiv.classList.add('hidden');
+          resultDiv.innerHTML = '';
+          
+          selectPoem(poemaOculto.key);
+          
+        } else {
+          resultDiv.classList.remove('hidden');
+          resultDiv.innerHTML = `<span class="text-red-500 font-bold">ERROR: CÓDIGO INVÁLIDO</span><p class="text-[11px] text-zinc-500 mt-1">El descifrado falló. Revisa los bits del libro físico.</p>`;
+        }
+      } catch (err) {
+        console.error("Error al decodificar binario:", err.message);
+        resultDiv.classList.remove('hidden');
+        resultDiv.innerHTML = `<span class="text-red-500">Error de comunicación con el servidor.</span>`;
       }
-      resultDiv.textContent = `Código binario [${input}] enviado al analizador síncrono.`;
     }
   </script>
 </body>
