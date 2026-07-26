@@ -412,12 +412,13 @@
         // 1. Registrar en Supabase
         await registrarCodigoDescifrado(input, document.getElementById("echoUser")?.value);
 
-        // 2. Si tienes una función para cargar un poema por ID/código, la llamas aquí.
-        // Ejemplo: si tus poemas en el catálogo usan el mismo código binario como ID:
-        if (typeof renderPoem === 'function' && catalog[input]) {
-          renderPoem(input);
-        } else if (typeof cargarPoemaPorCodigo === 'function') {
-          cargarPoemaPorCodigo(input);
+        // 2. Cargar el poema descifrado
+        if (typeof renderPoem === 'function') {
+          // Si el código exacto existe en catalog usa ese, si no, usa la primera clave disponible
+          const clavePoema = (catalog && catalog[input]) ? input : (catalog ? Object.keys(catalog)[0] : null);
+          if (clavePoema) {
+            renderPoem(clavePoema);
+          }
         }
 
         // 3. Limpiar caja de texto
@@ -433,27 +434,35 @@
       }
     }
     // --- NAVEGACIÓN Y VISTAS ---
-    function changeActiveView(newView) {
-      activeView = newView;
-      
-      document.getElementById('gridView').classList.toggle('hidden', activeView !== 'grid');
-      document.getElementById('readView').classList.toggle('hidden', activeView !== 'read');
-      document.getElementById('authorView').classList.toggle('hidden', activeView !== 'author');
-      document.getElementById('terminalView').classList.toggle('hidden', activeView !== 'terminal');
-      
-      const gridBtn = document.getElementById('gridNavBtn');
-      const termBtn = document.getElementById('terminalNavBtn');
-      
-      gridBtn.classList.remove('border-amber-500/50', 'bg-zinc-800');
-      termBtn.classList.remove('border-amber-500/50', 'bg-zinc-800');
-      
-      if (activeView === 'grid') {
-        gridBtn.classList.add('border-amber-500/50', 'bg-zinc-800');
-      } else if (activeView === 'terminal') {
-        termBtn.classList.add('border-amber-500/50', 'bg-zinc-800');
-      }
-    }
+    // --- NAVEGACIÓN Y VISTAS ---
+function changeActiveView(newView) {
+  activeView = newView;
 
+  document.getElementById('gridView')?.classList.toggle('hidden', activeView !== 'grid');
+  document.getElementById('readView')?.classList.toggle('hidden', activeView !== 'read');
+  document.getElementById('authorView')?.classList.toggle('hidden', activeView !== 'author');
+  document.getElementById('terminalView')?.classList.toggle('hidden', activeView !== 'terminal');
+
+  const gridBtn = document.getElementById('gridNavBtn');
+  const termBtn = document.getElementById('terminalNavBtn');
+
+  if (gridBtn) gridBtn.classList.remove('border-amber-500/50', 'bg-zinc-800');
+  if (termBtn) termBtn.classList.remove('border-amber-500/50', 'bg-zinc-800');
+
+  if (activeView === 'grid') {
+    if (gridBtn) gridBtn.classList.add('border-amber-500/50', 'bg-zinc-800');
+  } else if (activeView === 'terminal') {
+    if (termBtn) termBtn.classList.add('border-amber-500/50', 'bg-zinc-800');
+  } else if (activeView === 'read') {
+    const titleEl = document.getElementById('poemTitle');
+    // Si aún está en "CARGANDO...", fuerza el renderizado del primer poema
+    if (titleEl && (titleEl.textContent === 'CARGANDO...' || titleEl.textContent === '')) {
+      const primerCodigo = catalog ? Object.keys(catalog)[0] : null;
+      if (primerCodigo) renderPoem(primerCodigo);
+    }
+  }
+}
+ 
     function entrarAlReino() {
       cerrarPortada();
       changeActiveView('grid');
@@ -483,7 +492,20 @@
         }, 50);
       }
       changeActiveView('read');
-    }
+    function renderPoem(idPoema) {
+  if (!catalog || Object.keys(catalog).length === 0) return;
+
+  const poem = catalog[idPoema] || Object.values(catalog)[0];
+  if (!poem) return;
+
+  const titleEl = document.getElementById('poemTitle');
+  const bodyEl = document.getElementById('poemBodyContainer');
+  const bookEl = document.getElementById('poemBookLabel');
+
+  if (titleEl) titleEl.textContent = poem.titulo || poem.title || 'SIN TÍTULO';
+  if (bodyEl) bodyEl.innerHTML = poem.contenido || poem.cuerpo || poem.body || '';
+  if (bookEl) bookEl.textContent = poem.libro || poem.book || 'EL REINO';
+}
   </script>
 </body>
 </html>
