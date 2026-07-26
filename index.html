@@ -394,7 +394,7 @@
       }
     }
 
- // --- LÓGICA DE DESCIFRADO TERMINAL ---
+ // --- LÓGICA DE DESCIFRADO TERMINAL CON REDIRECCIÓN AL POEMA ---
     async function decodeBinary() {
       const input = document.getElementById('binaryInput').value.trim();
       const resultDiv = document.getElementById('binaryResult');
@@ -407,13 +407,27 @@
       const esBinarioValido = /^[01]{8}$/.test(input);
 
       if (esBinarioValido) {
-        resultDiv.innerHTML = `<span class="text-emerald-400 font-bold">✔ CÓDIGO DESCIFRADO:</span> Secuencia [${input}] procesada correctamente. Registrando en la bitácora...`;
+        resultDiv.innerHTML = `<span class="text-emerald-400 font-bold">✔ CÓDIGO DESCIFRADO:</span> Secuencia [${input}] autenticada. Abriendo poema...`;
         
-        // Guarda el código ingresado en Supabase
+        // 1. Registrar en Supabase
         await registrarCodigoDescifrado(input, document.getElementById("echoUser")?.value);
 
-        // Limpia la caja de texto
+        // 2. Si tienes una función para cargar un poema por ID/código, la llamas aquí.
+        // Ejemplo: si tus poemas en el catálogo usan el mismo código binario como ID:
+        if (typeof renderPoem === 'function' && catalog[input]) {
+          renderPoem(input);
+        } else if (typeof cargarPoemaPorCodigo === 'function') {
+          cargarPoemaPorCodigo(input);
+        }
+
+        // 3. Limpiar caja de texto
         document.getElementById('binaryInput').value = '';
+
+        // 4. Redirigir a la vista de lectura ('read') tras 1.5 segundos
+        setTimeout(() => {
+          changeActiveView('read');
+        }, 1500);
+
       } else {
         resultDiv.innerHTML = `<span class="text-red-400 font-bold">✖ ERROR:</span> Formato inválido. Debes ingresar exactamente 8 dígitos binarios (ejemplo: 00101110).`;
       }
