@@ -236,12 +236,23 @@
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwdnVjZmt0am51cWx0dXZnZmx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjk5MzIsImV4cCI6MjA5OTcwNTkzMn0.qV51Slxgz9pRnlGzLQB404SybQz4gOkDIbwSFnNxD-Q";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let catalog = {};
+    // Catálogo inicial predeterminado
+    let catalog = {
+      '00001010': {
+        titulo: 'PRIMAVERA EXTRAMUROS',
+        libro: 'EL REINO - SECCIÓN I',
+        contenido: '<p class="mb-4">El silencio habita la piedra antes de que el fuego la despierte...</p><p>Nada permanece intacto en los márgenes del tiempo.</p>'
+      }
+    };
 
     window.addEventListener('DOMContentLoaded', () => {
         initVisitCounter();
         cargarEcos();
         cargarCodigosDescifrados();
+        
+        // Carga inicial del poema en pantalla
+        const primerCodigo = Object.keys(catalog)[0];
+        if (primerCodigo) renderPoem(primerCodigo);
     });
 
     // --- CONTADOR DE HABITANTES ---
@@ -314,7 +325,6 @@
         </div>
       `).join('');
 
-      // Suscripción Realtime para Ecos
       _supabase
         .channel('ecos-live')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ecos' }, () => cargarEcos())
@@ -372,7 +382,6 @@
         </div>
       `).join('');
 
-      // Suscripción Realtime para Códigos
       _supabase
         .channel('codigos-live')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'codigos_descifrados' }, () => cargarCodigosDescifrados())
@@ -394,7 +403,7 @@
       }
     }
 
- // --- LÓGICA DE DESCIFRADO TERMINAL CON REDIRECCIÓN AL POEMA ---
+    // --- LÓGICA DE DESCIFRADO TERMINAL ---
     async function decodeBinary() {
       const input = document.getElementById('binaryInput').value.trim();
       const resultDiv = document.getElementById('binaryResult');
@@ -403,28 +412,22 @@
 
       resultDiv.classList.remove('hidden');
 
-      // Valida que sean exactamente 8 dígitos de unos y ceros
       const esBinarioValido = /^[01]{8}$/.test(input);
 
       if (esBinarioValido) {
         resultDiv.innerHTML = `<span class="text-emerald-400 font-bold">✔ CÓDIGO DESCIFRADO:</span> Secuencia [${input}] autenticada. Abriendo poema...`;
         
-        // 1. Registrar en Supabase
         await registrarCodigoDescifrado(input, document.getElementById("echoUser")?.value);
 
-        // 2. Cargar el poema descifrado
         if (typeof renderPoem === 'function') {
-          // Si el código exacto existe en catalog usa ese, si no, usa la primera clave disponible
           const clavePoema = (catalog && catalog[input]) ? input : (catalog ? Object.keys(catalog)[0] : null);
           if (clavePoema) {
             renderPoem(clavePoema);
           }
         }
 
-        // 3. Limpiar caja de texto
         document.getElementById('binaryInput').value = '';
 
-        // 4. Redirigir a la vista de lectura ('read') tras 1.5 segundos
         setTimeout(() => {
           changeActiveView('read');
         }, 1500);
@@ -433,36 +436,35 @@
         resultDiv.innerHTML = `<span class="text-red-400 font-bold">✖ ERROR:</span> Formato inválido. Debes ingresar exactamente 8 dígitos binarios (ejemplo: 00101110).`;
       }
     }
+
     // --- NAVEGACIÓN Y VISTAS ---
-    // --- NAVEGACIÓN Y VISTAS ---
-function changeActiveView(newView) {
-  activeView = newView;
+    function changeActiveView(newView) {
+      activeView = newView;
 
-  document.getElementById('gridView')?.classList.toggle('hidden', activeView !== 'grid');
-  document.getElementById('readView')?.classList.toggle('hidden', activeView !== 'read');
-  document.getElementById('authorView')?.classList.toggle('hidden', activeView !== 'author');
-  document.getElementById('terminalView')?.classList.toggle('hidden', activeView !== 'terminal');
+      document.getElementById('gridView')?.classList.toggle('hidden', activeView !== 'grid');
+      document.getElementById('readView')?.classList.toggle('hidden', activeView !== 'read');
+      document.getElementById('authorView')?.classList.toggle('hidden', activeView !== 'author');
+      document.getElementById('terminalView')?.classList.toggle('hidden', activeView !== 'terminal');
 
-  const gridBtn = document.getElementById('gridNavBtn');
-  const termBtn = document.getElementById('terminalNavBtn');
+      const gridBtn = document.getElementById('gridNavBtn');
+      const termBtn = document.getElementById('terminalNavBtn');
 
-  if (gridBtn) gridBtn.classList.remove('border-amber-500/50', 'bg-zinc-800');
-  if (termBtn) termBtn.classList.remove('border-amber-500/50', 'bg-zinc-800');
+      if (gridBtn) gridBtn.classList.remove('border-amber-500/50', 'bg-zinc-800');
+      if (termBtn) termBtn.classList.remove('border-amber-500/50', 'bg-zinc-800');
 
-  if (activeView === 'grid') {
-    if (gridBtn) gridBtn.classList.add('border-amber-500/50', 'bg-zinc-800');
-  } else if (activeView === 'terminal') {
-    if (termBtn) termBtn.classList.add('border-amber-500/50', 'bg-zinc-800');
-  } else if (activeView === 'read') {
-    const titleEl = document.getElementById('poemTitle');
-    // Si aún está en "CARGANDO...", fuerza el renderizado del primer poema
-    if (titleEl && (titleEl.textContent === 'CARGANDO...' || titleEl.textContent === '')) {
-      const primerCodigo = catalog ? Object.keys(catalog)[0] : null;
-      if (primerCodigo) renderPoem(primerCodigo);
+      if (activeView === 'grid') {
+        if (gridBtn) gridBtn.classList.add('border-amber-500/50', 'bg-zinc-800');
+      } else if (activeView === 'terminal') {
+        if (termBtn) termBtn.classList.add('border-amber-500/50', 'bg-zinc-800');
+      } else if (activeView === 'read') {
+        const titleEl = document.getElementById('poemTitle');
+        if (titleEl && (titleEl.textContent === 'CARGANDO...' || titleEl.textContent === '')) {
+          const primerCodigo = catalog ? Object.keys(catalog)[0] : null;
+          if (primerCodigo) renderPoem(primerCodigo);
+        }
+      }
     }
-  }
-}
- 
+
     function entrarAlReino() {
       cerrarPortada();
       changeActiveView('grid');
@@ -492,20 +494,22 @@ function changeActiveView(newView) {
         }, 50);
       }
       changeActiveView('read');
+    }
+
     function renderPoem(idPoema) {
-  if (!catalog || Object.keys(catalog).length === 0) return;
+      if (!catalog || Object.keys(catalog).length === 0) return;
 
-  const poem = catalog[idPoema] || Object.values(catalog)[0];
-  if (!poem) return;
+      const poem = catalog[idPoema] || Object.values(catalog)[0];
+      if (!poem) return;
 
-  const titleEl = document.getElementById('poemTitle');
-  const bodyEl = document.getElementById('poemBodyContainer');
-  const bookEl = document.getElementById('poemBookLabel');
+      const titleEl = document.getElementById('poemTitle');
+      const bodyEl = document.getElementById('poemBodyContainer');
+      const bookEl = document.getElementById('poemBookLabel');
 
-  if (titleEl) titleEl.textContent = poem.titulo || poem.title || 'SIN TÍTULO';
-  if (bodyEl) bodyEl.innerHTML = poem.contenido || poem.cuerpo || poem.body || '';
-  if (bookEl) bookEl.textContent = poem.libro || poem.book || 'EL REINO';
-}
+      if (titleEl) titleEl.textContent = poem.titulo || poem.title || 'SIN TÍTULO';
+      if (bodyEl) bodyEl.innerHTML = poem.contenido || poem.cuerpo || poem.body || '';
+      if (bookEl) bookEl.textContent = poem.libro || poem.book || 'EL REINO';
+    }
   </script>
 </body>
 </html>
