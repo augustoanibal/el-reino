@@ -394,23 +394,30 @@
       }
     }
 
-    // --- LÓGICA DE DESCIFRADO TERMINAL ---
-    function decodeBinary() {
+ // --- LÓGICA DE DESCIFRADO TERMINAL ---
+    async function decodeBinary() {
       const input = document.getElementById('binaryInput').value.trim();
       const resultDiv = document.getElementById('binaryResult');
       
       if (!input) return;
 
       resultDiv.classList.remove('hidden');
-      
-      if (input === '00001010') {
-        resultDiv.innerHTML = `<span class="text-emerald-400 font-bold">✔ CÓDIGO CORRECTO:</span> Transmisión '00001010' autenticada. Registro guardado en la bitácora del Reino.`;
-        registrarCodigoDescifrado(input, document.getElementById("echoUser")?.value);
+
+      // Valida que sean exactamente 8 dígitos de unos y ceros
+      const esBinarioValido = /^[01]{8}$/.test(input);
+
+      if (esBinarioValido) {
+        resultDiv.innerHTML = `<span class="text-emerald-400 font-bold">✔ CÓDIGO DESCIFRADO:</span> Secuencia [${input}] procesada correctamente. Registrando en la bitácora...`;
+        
+        // Guarda el código ingresado en Supabase
+        await registrarCodigoDescifrado(input, document.getElementById("echoUser")?.value);
+
+        // Limpia la caja de texto
+        document.getElementById('binaryInput').value = '';
       } else {
-        resultDiv.innerHTML = `<span class="text-red-400 font-bold">✖ ERROR:</span> Secuencia de cifrado no reconocida. Comprueba el código binario del libro físico.`;
+        resultDiv.innerHTML = `<span class="text-red-400 font-bold">✖ ERROR:</span> Formato inválido. Debes ingresar exactamente 8 dígitos binarios (ejemplo: 00101110).`;
       }
     }
-
     // --- NAVEGACIÓN Y VISTAS ---
     function changeActiveView(newView) {
       activeView = newView;
