@@ -516,26 +516,45 @@
       container.innerHTML = ''; 
       
       switch (renderActual) {
-        case 'estandar':
-        case 'tradicional':
-          container.className = "text-lg leading-normal text-zinc-300 font-light font-serif whitespace-normal space-y-1.5 animate-fadeIn";
-          const fragmentoEstandar = document.createDocumentFragment();
-          const lineasEstandar = rawText.split(/\\n|\n/);
-          
-          lineasEstandar.forEach(linea => {
-            const pVerso = document.createElement('p');
-            if (!linea.trim()) {
-              pVerso.innerHTML = '&nbsp;';
-              pVerso.className = 'h-3'; 
-            } else {
-              pVerso.innerHTML = linea.trim();
-            }
-            fragmentoEstandar.appendChild(pVerso);
-          });
-          
-          container.appendChild(fragmentoEstandar);
-          aplicarSangriaFrancesa(container);
-          break;
+       case 'estandar':
+    case 'tradicional':
+      container.className = "text-lg leading-normal text-zinc-300 font-light font-serif whitespace-normal space-y-1.5 animate-fadeIn";
+      const fragmentoEstandar = document.createDocumentFragment();
+      const lineasEstandar = rawText.split(/\\n|\n/);
+      
+      let blockquoteActual = null;
+
+      lineasEstandar.forEach(linea => {
+        const lineaLimpia = linea.trim();
+
+        // Detecta si la línea es parte de un epígrafe (empieza por '>' o '<blockquote>')
+        if (lineaLimpia.startsWith('>') || lineaLimpia.startsWith('<blockquote>')) {
+          if (!blockquoteActual) {
+            blockquoteActual = document.createElement('blockquote');
+            blockquoteActual.className = "border-l-2 border-zinc-600 pl-4 my-4 italic text-zinc-400 text-base space-y-1";
+            fragmentoEstandar.appendChild(blockquoteActual);
+          }
+          const pEpigrafe = document.createElement('p');
+          pEpigrafe.innerHTML = lineaLimpia.replace(/^>|<\/?blockquote>/g, '').trim();
+          blockquoteActual.appendChild(pEpigrafe);
+        } else {
+          // Si termina el epígrafe, reseteamos el contenedor acumulador
+          blockquoteActual = null;
+
+          const pVerso = document.createElement('p');
+          if (!lineaLimpia) {
+            pVerso.innerHTML = '&nbsp;';
+            pVerso.className = 'h-3'; 
+          } else {
+            pVerso.innerHTML = lineaLimpia;
+          }
+          fragmentoEstandar.appendChild(pVerso);
+        }
+      });
+      
+      container.appendChild(fragmentoEstandar);
+      aplicarSangriaFrancesa(container);
+      break;
 
         case 'preformateado':
         case 'terminal':
