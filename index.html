@@ -115,9 +115,9 @@
   </header>
 
   <div class="pt-24">
-    <!-- PANTALLA 1: GRID DE SECCIONES -->
+    <!-- PANTALLA 1: GRID DE SECCIONES CON JERARQUÍA -->
     <div id="gridView" class="hidden p-8 animate-fadeIn">
-      <div id="contenedor-tarjetas" class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      <div id="contenedor-tarjetas" class="max-w-6xl mx-auto flex flex-col gap-12"></div>
     </div>
 
     <!-- PANTALLA 2: LECTURA DE POEMAS -->
@@ -424,7 +424,7 @@
       }
     }
 
-    // --- LÓGICA DE CARGA Y LECTURA DE POEMAS COMPLETA (2.21_CORRECION) ---
+    // --- LÓGICA DE CARGA Y LECTURA DE POEMAS COMPLETA ---
     async function fetchPoemsFromSupabase() {
       try {
         const { data, error } = await _supabase.from('poemas').select('*');
@@ -493,9 +493,10 @@
       bookLabel.textContent = poema.book_title || 'EL REINO';
       
       let bookTextColor = 'text-amber-500';
-      if (poema.book === 'primavera-extramuros') {
+      const bkLower = (poema.book || '').toLowerCase();
+      if (bkLower.includes('primavera')) {
         bookTextColor = 'text-emerald-500';
-      } else if (poema.book === 'orbita-rota') {
+      } else if (bkLower.includes('orbita') || bkLower.includes('órbita')) {
         bookTextColor = 'text-cyan-400';
       }
       
@@ -592,37 +593,88 @@
       }
     }
 
+    // --- FUNCIÓN DE DIBUJO DE GRID CON JERARQUÍA ESTABLECIDA ---
     function dibujarGridDePoemas() {
       const contenedor = document.getElementById('contenedor-tarjetas');
       if (!contenedor) return;
       contenedor.innerHTML = ''; 
-      
-      Object.keys(catalog).forEach(key => {
-        const poema = catalog[key];
-        if (poema.binary_code || poema.is_hidden) return; 
 
-        const card = document.createElement('div');
-        let borderHoverColor = 'hover:border-amber-500/40';
-        let badgeColor = 'text-amber-500';
-        if (poema.book === 'primavera-extramuros') {
-          borderHoverColor = 'hover:border-emerald-500/40';
-          badgeColor = 'text-emerald-500';
-        } else if (poema.book === 'orbita-rota') {
-          borderHoverColor = 'hover:border-cyan-500/40';
-          badgeColor = 'text-cyan-400';
+      // Definición de Secciones en orden jerárquico estricto
+      const secciones = [
+        {
+          id: 'el-reino',
+          titulo: 'EL REINO / LOS EXTRAMUROS',
+          subtitulo: 'PRIMERA SECCIÓN',
+          color: 'text-amber-500',
+          borderHover: 'hover:border-amber-500/40',
+          badgeColor: 'text-amber-500',
+          matches: ['el-reino', 'los-extramuros', 'el reino', 'los extramuros']
+        },
+        {
+          id: 'orbita-rota',
+          titulo: 'ÓRBITA ROTA',
+          subtitulo: 'SEGUNDA SECCIÓN',
+          color: 'text-cyan-400',
+          borderHover: 'hover:border-cyan-500/40',
+          badgeColor: 'text-cyan-400',
+          matches: ['orbita-rota', 'órbita-rota', 'orbita rota', 'órbita rota']
+        },
+        {
+          id: 'primavera-extramuros',
+          titulo: 'PRIMAVERA EXTRAMUROS',
+          subtitulo: 'TERCERA SECCIÓN',
+          color: 'text-emerald-500',
+          borderHover: 'hover:border-emerald-500/40',
+          badgeColor: 'text-emerald-500',
+          matches: ['primavera-extramuros', 'primavera extramuros']
         }
-        card.className = `bg-zinc-950 border border-zinc-900 p-6 rounded-2xl transition-all cubic-bezier(0.4, 0, 0.2, 1) cursor-pointer group ${borderHoverColor}`;
-        
-        const rawContent = poema.body_raw ? String(poema.body_raw) : '';
-        const extracto = rawContent.replace(/\\n/g, ' ').replace(/\n/g, ' ').substring(0, 95) + '...';
-        
-        card.innerHTML = `
-          <div class="font-mono text-xs ${badgeColor} mb-2 uppercase tracking-wider">${poema.book_title || 'EL REINO'}</div>
-          <h3 class="text-xl font-bold text-zinc-100 group-hover:text-zinc-50 transition-colors uppercase">${poema.title || 'Sin Título'}</h3>
-          <p class="font-mono text-zinc-500 text-[11px] mt-3 line-clamp-2 leading-relaxed tracking-wide">${extracto || 'Sin contenido disponible.'}</p>
-        `;
-        card.onclick = () => { selectPoem(key); };
-        contenedor.appendChild(card);
+      ];
+
+      secciones.forEach(sec => {
+        // Filtrar poemas del catálogo que pertenecen a esta sección
+        const poemasDeSeccion = Object.keys(catalog).filter(key => {
+          const poema = catalog[key];
+          if (poema.binary_code || poema.is_hidden) return false;
+          const bookVal = (poema.book || '').toLowerCase().trim();
+          return sec.matches.some(m => bookVal.includes(m));
+        });
+
+        // Solo renderizar la sección si existen poemas asignados a ella
+        if (poemasDeSeccion.length > 0) {
+          const secWrapper = document.createElement('div');
+          secWrapper.className = 'space-y-4';
+
+          // Encabezado visual de la sección
+          secWrapper.innerHTML = `
+            <div class="border-b border-zinc-800/80 pb-2 flex items-center justify-between">
+              <h2 class="font-mono text-sm tracking-widest font-bold uppercase ${sec.color}">${sec.titulo}</h2>
+              <span class="font-mono text-[10px] text-zinc-600 tracking-wider uppercase">${sec.subtitulo}</span>
+            </div>
+          `;
+
+          const gridDiv = document.createElement('div');
+          gridDiv.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6';
+
+          poemasDeSeccion.forEach(key => {
+            const poema = catalog[key];
+            const card = document.createElement('div');
+            card.className = `bg-zinc-950 border border-zinc-900 p-6 rounded-2xl transition-all cubic-bezier(0.4, 0, 0.2, 1) cursor-pointer group ${sec.borderHover}`;
+
+            const rawContent = poema.body_raw ? String(poema.body_raw) : '';
+            const extracto = rawContent.replace(/\\n/g, ' ').replace(/\n/g, ' ').substring(0, 95) + '...';
+
+            card.innerHTML = `
+              <div class="font-mono text-xs ${sec.badgeColor} mb-2 uppercase tracking-wider">${poema.book_title || sec.titulo}</div>
+              <h3 class="text-xl font-bold text-zinc-100 group-hover:text-zinc-50 transition-colors uppercase">${poema.title || 'Sin Título'}</h3>
+              <p class="font-mono text-zinc-500 text-[11px] mt-3 line-clamp-2 leading-relaxed tracking-wide">${extracto || 'Sin contenido disponible.'}</p>
+            `;
+            card.onclick = () => { selectPoem(key); };
+            gridDiv.appendChild(card);
+          });
+
+          secWrapper.appendChild(gridDiv);
+          contenedor.appendChild(secWrapper);
+        }
       });
     }
 
