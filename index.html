@@ -38,6 +38,37 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: #121212; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #2c2c2c; border-radius: 2px; }
         
+        .poem-card {
+            background: #09090b;
+            border: 1px solid #18181b;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .collage-canvas {
+            position: relative;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px dashed rgba(239, 68, 68, 0.1);
+            overflow: hidden;
+        }
+        .collage-item {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        #poemBodyContainer blockquote {
+            font-size: 0.875rem;
+            padding-left: 1.5rem;
+            border-left: 2px solid #3f3f46;
+            color: #a1a1aa;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+            display: block;
+        }
+
+        /* DISEÑO DE SANGRÍA FRANCESA */
         .sangria-francesa-aplicada {
             padding-left: 2rem;
             text-indent: -2rem;
@@ -49,7 +80,7 @@
   <!-- PORTADA DE BIENVENIDA -->
   <div id="welcomeOverlay" class="fixed inset-0 bg-[#121316] z-[9999] flex items-center justify-center p-8 transition-all duration-700 ease-in-out">
     <div class="max-w-3xl w-full font-code text-sm text-zinc-600 select-none leading-relaxed text-justify break-all tracking-[0.15em]">
-      01001100011000010010000001100011011010010110011001101110011001100001001000000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">SITIO</span>011100110110100101100110010101101101011100000111001001100101001000000111001001100101011100110111010101101110011011100110000100100000011101010110111001100001001000000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">ILUSIÓN</span>011011100110111101100110011010010110011001101001011001011000001001000000<button onclick="irDirectoATerminal()" class="font-bold text-amber-300 hover:text-amber-200 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/60 rounded px-2 py-0.5 transition-all duration-300 mx-1 focus:outline-none cursor-pointer hover:scale-105 active:scale-95 inline-block text-xs font-code tracking-normal">INTERFAZ_CODE</button>01111001001000000110001101100001011001100110000101100101011011010110111001100110011010010110011001101001011011100100110000100100000011110010010000001100011011000010110010100101101101011011_<button onclick="entrarAlReino()" class="font-bold text-lg text-amber-400 hover:text-amber-300 transition-all duration-300 mx-1 focus:outline-none cursor-pointer hover:scale-105 active:scale-95 inline-block border-b border-amber-400">ENTRAR</button>_0110111001100100000011001010110110001100001001000000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">METAMORFOSIS</span>011011100110000101100100011000010010000001110000011000010111001001100101011000110110100100100000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">NADA</span>01101101011001010110111001101110011011100110111001001011000010010000001110011011010010110001100101011011010110010001001100001011100100110011001110110010110000100000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">GREGORSAMSA</span>0110010101110011011101000110001001100001000000110110001100001001000000110010101110011011100111000011001010111001001100000100000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">ESPERA</span>011000010010000001100010010000010110010001100011011001010110110101110000010000001101100011001110011001000000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">LINEAS</span>01101100011010010110111001100101011000010111001100100000011001
+      01001100011000010010000001100011011010010110011001101110011001100001001000000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">SITIO</span>011100110110100101100110010101101101011100000111001001100101001000000111001001100101011100110111010101101110011011100110000100100000011101010110111001100001001000000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">ILUSIÓN</span>011011100110111101100110011010010110011001101001011001011000001001000000<!-- BOTÓN INTERFAZ_CODE --><button onclick="irDirectoATerminal()" class="font-bold text-amber-300 hover:text-amber-200 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/60 rounded px-2 py-0.5 transition-all duration-300 mx-1 focus:outline-none cursor-pointer hover:scale-105 active:scale-95 inline-block text-xs font-code tracking-normal">INTERFAZ_CODE</button>01111001001000000110001101100001011001000110000101100101011011010110111001100110011010010110011001101001011011100100110000100100000011110010010000001100011011000010110010100101101101011011_<button onclick="entrarAlReino()" class="font-bold text-lg text-amber-400 hover:text-amber-300 transition-all duration-300 mx-1 focus:outline-none cursor-pointer hover:scale-105 active:scale-95 inline-block border-b border-amber-400">ENTRAR</button>_0110111001100100000011001010110110001100001001000000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">METAMORFOSIS</span>011011100110000101100100011000010010000001110000011000010111001001100101011000110110100100100000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">NADA</span>01101101011001020110000101110101011101000110111001110000011011010110010201101110011011100110111001001011000010010000001110011011010010110001100101011011010110010001001100001011100100110111001110110010110000100000<!-- BOTÓN AUTOR REINTEGRADO EN PORTADA --><button onclick="irAAutor()" class="font-bold text-amber-300 hover:text-amber-200 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/60 rounded px-2 py-0.5 transition-all duration-300 mx-1 focus:outline-none cursor-pointer hover:scale-105 active:scale-95 inline-block text-xs font-code tracking-normal">AUTOR</button>011011010110010201101110011011100110111001001011000010010000001110011011010010110001100101011011010110010001001100001011100100110011001110110010110000100000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">GREGORSAMSA</span>0110010101110011011101000110001001100001000000110110001100001001000000110010101110011011100111000011001010111001001100000100000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">ESPERA</span>011000010010000001100010010000010110010001100011011001010110110101110000010000001101100011001110011001000000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">LINEAS</span>01101100011010010110111001100101011000010111001100100000011001
     </div>
   </div>
 
@@ -105,12 +136,12 @@
       </main>
     </div>
 
-    <!-- PANTALLA 3: DATOS DEL AUTOR -->
+    <!-- PANTALLA 3: DATOS DEL AUTOR CON BIODATA COMPLETA -->
     <div id="authorView" class="hidden min-h-[calc(100vh-6rem)] flex justify-center items-start p-6 lg:p-16 animate-fadeIn">
       <main class="max-w-3xl w-full flex flex-col gap-8">
-        <div class="font-code text-sm text-amber-400/90 bg-zinc-950/60 p-8 rounded-xl border border-zinc-800/80 max-w-3xl mx-auto leading-relaxed space-y-4">
+        <div class="font-code text-xs text-amber-400/90 bg-zinc-950/60 p-8 rounded-xl border border-zinc-800/80 max-w-3xl mx-auto leading-relaxed space-y-4">
           <p class="text-justify">
-            <strong class="text-amber-500 font-bold text-base tracking-wide">AUGUSTO ANÍBAL TOLEDO (Tacna)</strong> siguió el rumbo de las letras y la lingüística, es egresado de la Universidad Nacional de San Agustín de Arequipa y con estudios de Maestría en Investigación e Innovación Científica en la Universidad Privada de Tacna. Su trayectoria cultural ha sido reconocida con la Resolución Municipal N.º 0299-2022 por su aporte literario y otra resolución en 2011 por organizar el conversatorio Perspectivas Literarias en la Región Sur en Tacna.
+            <strong class="text-amber-500 font-bold text-sm tracking-wide">AUGUSTO ANÍBAL TOLEDO (Tacna)</strong> siguió el rumbo de las letras y la lingüística, es egresado de la Universidad Nacional de San Agustín de Arequipa y con estudios de Maestría en Investigación e Innovación Científica en la Universidad Privada de Tacna. Su trayectoria cultural ha sido reconocida con la Resolución Municipal N.º 0299-2022 por su aporte literario y otra resolución en 2011 por organizar el conversatorio Perspectivas Literarias en la Región Sur en Tacna.
           </p>
           <p class="text-justify">
             Su activa participación en el ecosistema cultural lo ha llevado a ser jurado para el Ministerio de Cultura, Gobiernos Regionales y UGELs de Arequipa y Tacna en certámenes como el Concurso Nacional de Oratoria (2024), PERÚ LEE (2023), el Premio José María Arguedas (2021 y 2023) y Poeta Joven (2018-2019).
@@ -229,30 +260,20 @@
     </div>
   </div>
 
-  <!-- SCRIPT GENERAL Y LÓGICA DE SUPABASE -->
+  <!-- SCRIPT GENERAL Y LÓGICA DE SUPABASE INTEGRADA -->
   <script>
     let activeView = 'read'; 
     const SUPABASE_URL = "https://kpvucfktjnuqltuvgflx.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwdnVjZmt0am51cWx0dXZnZmx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjk5MzIsImV4cCI6MjA5OTcwNTkzMn0.qV51Slxgz9pRnlGzLQB404SybQz4gOkDIbwSFnNxD-Q";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Catálogo inicial predeterminado
-    let catalog = {
-      '00001010': {
-        titulo: 'PRIMAVERA EXTRAMUROS',
-        libro: 'EL REINO - SECCIÓN I',
-        contenido: '<p class="mb-4">El silencio habita la piedra antes de que el fuego la despierte...</p><p>Nada permanece intacto en los márgenes del tiempo.</p>'
-      }
-    };
+    let catalog = {};
 
     window.addEventListener('DOMContentLoaded', () => {
+        fetchPoemsFromSupabase();
         initVisitCounter();
         cargarEcos();
         cargarCodigosDescifrados();
-        
-        // Carga inicial del poema en pantalla
-        const primerCodigo = Object.keys(catalog)[0];
-        if (primerCodigo) renderPoem(primerCodigo);
     });
 
     // --- CONTADOR DE HABITANTES ---
@@ -403,37 +424,258 @@
       }
     }
 
-    // --- LÓGICA DE DESCIFRADO TERMINAL ---
-    async function decodeBinary() {
-      const input = document.getElementById('binaryInput').value.trim();
-      const resultDiv = document.getElementById('binaryResult');
-      
-      if (!input) return;
-
-      resultDiv.classList.remove('hidden');
-
-      const esBinarioValido = /^[01]{8}$/.test(input);
-
-      if (esBinarioValido) {
-        resultDiv.innerHTML = `<span class="text-emerald-400 font-bold">✔ CÓDIGO DESCIFRADO:</span> Secuencia [${input}] autenticada. Abriendo poema...`;
+    // --- LÓGICA DE CARGA Y LECTURA DE POEMAS COMPLETA (2.21_CORRECION) ---
+    async function fetchPoemsFromSupabase() {
+      try {
+        const { data, error } = await _supabase.from('poemas').select('*');
+        if (error) throw error;
         
-        await registrarCodigoDescifrado(input, document.getElementById("echoUser")?.value);
+        const nuevoCatalogo = {};
+        data.forEach(poema => {
+          if (poema.binary_code || poema.is_hidden === true) return; 
 
-        if (typeof renderPoem === 'function') {
-          const clavePoema = (catalog && catalog[input]) ? input : (catalog ? Object.keys(catalog)[0] : null);
-          if (clavePoema) {
-            renderPoem(clavePoema);
-          }
+          nuevoCatalogo[poema.key] = {
+            title: poema.titulo,
+            book: poema.book,
+            book_title: poema.book,
+            tipo_render: poema.tipo_render,
+            body_raw: poema.contenido,
+            binary_code: poema.binary_code,
+            is_hidden: poema.is_hidden,
+            metadatos_diseno: typeof poema.metadatos_diseno === 'string'
+              ? JSON.parse(poema.metadatos_diseno)
+              : poema.metadatos_diseno
+          };
+        });
+        
+        catalog = nuevoCatalogo;
+        dibujarGridDePoemas();
+        
+        if (catalog['silencio']) {
+          selectPoem('silencio');
+        } else {
+          const keys = Object.keys(catalog);
+          if (keys.length > 0) selectPoem(keys[0]);
         }
 
-        document.getElementById('binaryInput').value = '';
+      } catch (err) {
+        console.error("Error cargando poemas desde Supabase:", err.message);
+      }
+    }
 
-        setTimeout(() => {
-          changeActiveView('read');
-        }, 1500);
+    function aplicarSangriaFrancesa(container) {
+      const versosDOM = container.querySelectorAll('p');
+      versosDOM.forEach(verso => {
+        const clon = verso.cloneNode(true);
+        clon.style.position = 'absolute';
+        clon.style.whiteSpace = 'nowrap';
+        clon.style.visibility = 'hidden';
+        clon.style.width = 'auto';
+        document.body.appendChild(clon);
+        
+        if (verso.offsetWidth < clon.offsetWidth) {
+          verso.classList.add('sangria-francesa-aplicada');
+        }
+        document.body.removeChild(clon);
+      });
+    }
 
+    function selectPoem(key) {
+      const poema = catalog[key];
+      if (!poema) return;
+      
+      changeActiveView('read');
+      
+      const tituloHTML = document.getElementById('poemTitle'); 
+      const container = document.getElementById('poemBodyContainer');
+      const bookLabel = document.getElementById('poemBookLabel');
+      
+      bookLabel.textContent = poema.book_title || 'EL REINO';
+      
+      let bookTextColor = 'text-amber-500';
+      if (poema.book === 'primavera-extramuros') {
+        bookTextColor = 'text-emerald-500';
+      } else if (poema.book === 'orbita-rota') {
+        bookTextColor = 'text-cyan-400';
+      }
+      
+      bookLabel.className = `font-mono text-xs uppercase tracking-widest font-bold ${bookTextColor}`;
+      
+      const renderActual = poema.tipo_render || 'estandar';
+      document.getElementById('poemRenderBadge').textContent = `render: ${renderActual}`;
+      
+      if (renderActual === 'terminal' || renderActual === 'preformateado') {
+        tituloHTML.className = "text-6xl md:text-7xl font-code text-amber-500 tracking-wider font-bold mb-6 uppercase animate-fadeIn font-mono";
       } else {
-        resultDiv.innerHTML = `<span class="text-red-400 font-bold">✖ ERROR:</span> Formato inválido. Debes ingresar exactamente 8 dígitos binarios (ejemplo: 00101110).`;
+        tituloHTML.className = "text-3xl lg:text-4xl font-light tracking-wide text-zinc-100 uppercase font-serif mb-4";
+      }
+      
+      tituloHTML.textContent = poema.title || 'SIN TÍTULO';
+      const rawText = poema.body_raw ? String(poema.body_raw) : '';
+      container.innerHTML = ''; 
+      
+      switch (renderActual) {
+        case 'estandar':
+        case 'tradicional':
+          container.className = "text-lg leading-normal text-zinc-300 font-light font-serif whitespace-normal space-y-1.5 animate-fadeIn";
+          const fragmentoEstandar = document.createDocumentFragment();
+          const lineasEstandar = rawText.split(/\\n|\n/);
+          
+          lineasEstandar.forEach(linea => {
+            const pVerso = document.createElement('p');
+            if (!linea.trim()) {
+              pVerso.innerHTML = '&nbsp;';
+              pVerso.className = 'h-3'; 
+            } else {
+              pVerso.innerHTML = linea.trim();
+            }
+            fragmentoEstandar.appendChild(pVerso);
+          });
+          
+          container.appendChild(fragmentoEstandar);
+          aplicarSangriaFrancesa(container);
+          break;
+
+        case 'preformateado':
+        case 'terminal':
+          container.className = "font-code text-sm text-amber-400/90 bg-zinc-950/60 p-6 rounded-xl border border-zinc-800/80 whitespace-pre-wrap overflow-x-auto leading-relaxed space-y-4 animate-fadeIn";
+          container.innerHTML = rawText.replace(/\\n/g, '<br>').replace(/\n/g, '<br>') || 'Este poema aún no tiene contenido.';
+          break;
+
+        case 'tabular_grid':
+          container.className = "flex flex-col gap-4 font-mono text-base text-cyan-100/90 animate-fadeIn";
+          const lineasTabulares = rawText.split('\\n');
+          lineasTabulares.forEach(linea => {
+            const columnas = linea.split('||');
+            const filaDiv = document.createElement('div');
+            if (poema.metadatos_diseno && poema.metadatos_diseno.mobile_stack) {
+              filaDiv.className = "flex flex-col md:grid md:grid-cols-2 gap-4 border-l-2 border-zinc-800 md:border-l-0 pl-3 md:pl-0";
+            } else {
+              filaDiv.className = "grid grid-cols-2 gap-4";
+            }
+            columnas.forEach(col => {
+              const colSpan = document.createElement('div');
+              colSpan.className = "whitespace-pre-line";
+              colSpan.innerHTML = col.trim().replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+              filaDiv.appendChild(colSpan);
+            });
+            container.appendChild(filaDiv);
+          });
+          break;
+
+        case 'collage_libre':
+          container.className = "animate-fadeIn";
+          const canvas = document.createElement('div');
+          canvas.className = "collage-canvas rounded-xl shadow-inner shadow-black";
+          canvas.style.aspectRatio = (poema.metadatos_diseno && poema.metadatos_diseno.aspect_ratio) || "1/1";
+          if (poema.metadatos_diseno && poema.metadatos_diseno.elementos) {
+            poema.metadatos_diseno.elementos.forEach(el => {
+              const span = document.createElement('span');
+              span.className = `collage-item ${el.font || 'font-serif'}`;
+              span.style.left = `${el.x}%`;
+              span.style.top = `${el.y}%`;
+              span.style.fontSize = el.size || '1rem';
+              span.style.fontWeight = el.weight || 'normal';
+              span.style.fontStyle = el.style || 'normal';
+              span.style.color = el.color || '#E4E4E7';
+              span.innerHTML = el.texto.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+              canvas.appendChild(span);
+            });
+          }
+          container.appendChild(canvas);
+          break;
+
+        default:
+          container.className = "text-lg leading-relaxed text-zinc-300 font-light font-serif whitespace-normal space-y-4 animate-fadeIn";
+          container.innerHTML = rawText.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+          break;
+      }
+    }
+
+    function dibujarGridDePoemas() {
+      const contenedor = document.getElementById('contenedor-tarjetas');
+      if (!contenedor) return;
+      contenedor.innerHTML = ''; 
+      
+      Object.keys(catalog).forEach(key => {
+        const poema = catalog[key];
+        if (poema.binary_code || poema.is_hidden) return; 
+
+        const card = document.createElement('div');
+        let borderHoverColor = 'hover:border-amber-500/40';
+        let badgeColor = 'text-amber-500';
+        if (poema.book === 'primavera-extramuros') {
+          borderHoverColor = 'hover:border-emerald-500/40';
+          badgeColor = 'text-emerald-500';
+        } else if (poema.book === 'orbita-rota') {
+          borderHoverColor = 'hover:border-cyan-500/40';
+          badgeColor = 'text-cyan-400';
+        }
+        card.className = `bg-zinc-950 border border-zinc-900 p-6 rounded-2xl transition-all cubic-bezier(0.4, 0, 0.2, 1) cursor-pointer group ${borderHoverColor}`;
+        
+        const rawContent = poema.body_raw ? String(poema.body_raw) : '';
+        const extracto = rawContent.replace(/\\n/g, ' ').replace(/\n/g, ' ').substring(0, 95) + '...';
+        
+        card.innerHTML = `
+          <div class="font-mono text-xs ${badgeColor} mb-2 uppercase tracking-wider">${poema.book_title || 'EL REINO'}</div>
+          <h3 class="text-xl font-bold text-zinc-100 group-hover:text-zinc-50 transition-colors uppercase">${poema.title || 'Sin Título'}</h3>
+          <p class="font-mono text-zinc-500 text-[11px] mt-3 line-clamp-2 leading-relaxed tracking-wide">${extracto || 'Sin contenido disponible.'}</p>
+        `;
+        card.onclick = () => { selectPoem(key); };
+        contenedor.appendChild(card);
+      });
+    }
+
+    // --- LÓGICA DE DESCIFRADO BINARIO DIRECTO ---
+    async function decodeBinary() {
+      const codeInput = document.getElementById('binaryInput').value.trim();
+      const resultDiv = document.getElementById('binaryResult');
+      
+      if (!codeInput) return;
+      
+      try {
+        const { data, error } = await _supabase
+          .from('poemas')
+          .select('*')
+          .eq('binary_code', codeInput);
+          
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          const poemaOculto = data[0];
+          
+          // Registrar en Supabase
+          await registrarCodigoDescifrado(codeInput, document.getElementById("echoUser")?.value);
+
+          // Cargar dinámicamente al catálogo
+          catalog[poemaOculto.key] = {
+            title: poemaOculto.titulo,
+            book: poemaOculto.book,
+            book_title: poemaOculto.book,
+            tipo_render: poemaOculto.tipo_render,
+            body_raw: poemaOculto.contenido,
+            binary_code: poemaOculto.binary_code,
+            is_hidden: poemaOculto.is_hidden,
+            metadatos_diseno: typeof poemaOculto.metadatos_diseno === 'string'
+              ? JSON.parse(poemaOculto.metadatos_diseno)
+              : poemaOculto.metadatos_diseno
+          };
+          
+          document.getElementById('binaryInput').value = '';
+          resultDiv.classList.add('hidden');
+          resultDiv.innerHTML = '';
+          
+          // Muestra el poema directamente
+          selectPoem(poemaOculto.key);
+          
+        } else {
+          resultDiv.classList.remove('hidden');
+          resultDiv.innerHTML = `<span class="text-red-500 font-bold">ERROR: CÓDIGO INVÁLIDO</span><p class="text-[11px] text-zinc-500 mt-1">El descifrado falló. Revisa los bits del libro físico.</p>`;
+        }
+      } catch (err) {
+        console.error("Error al decodificar binario:", err.message);
+        resultDiv.classList.remove('hidden');
+        resultDiv.innerHTML = `<span class="text-red-500">Error de comunicación con el servidor.</span>`;
       }
     }
 
@@ -456,12 +698,6 @@
         if (gridBtn) gridBtn.classList.add('border-amber-500/50', 'bg-zinc-800');
       } else if (activeView === 'terminal') {
         if (termBtn) termBtn.classList.add('border-amber-500/50', 'bg-zinc-800');
-      } else if (activeView === 'read') {
-        const titleEl = document.getElementById('poemTitle');
-        if (titleEl && (titleEl.textContent === 'CARGANDO...' || titleEl.textContent === '')) {
-          const primerCodigo = catalog ? Object.keys(catalog)[0] : null;
-          if (primerCodigo) renderPoem(primerCodigo);
-        }
       }
     }
 
@@ -473,6 +709,11 @@
     function irDirectoATerminal() {
       cerrarPortada();
       changeActiveView('terminal');
+    }
+
+    function irAAutor() {
+      cerrarPortada();
+      changeActiveView('author');
     }
 
     function cerrarPortada() {
@@ -494,21 +735,6 @@
         }, 50);
       }
       changeActiveView('read');
-    }
-
-    function renderPoem(idPoema) {
-      if (!catalog || Object.keys(catalog).length === 0) return;
-
-      const poem = catalog[idPoema] || Object.values(catalog)[0];
-      if (!poem) return;
-
-      const titleEl = document.getElementById('poemTitle');
-      const bodyEl = document.getElementById('poemBodyContainer');
-      const bookEl = document.getElementById('poemBookLabel');
-
-      if (titleEl) titleEl.textContent = poem.titulo || poem.title || 'SIN TÍTULO';
-      if (bodyEl) bodyEl.innerHTML = poem.contenido || poem.cuerpo || poem.body || '';
-      if (bookEl) bookEl.textContent = poem.libro || poem.book || 'EL REINO';
     }
   </script>
 </body>
