@@ -516,45 +516,43 @@
       container.innerHTML = ''; 
       
       switch (renderActual) {
-       case 'estandar':
-    case 'tradicional':
-      container.className = "text-lg leading-normal text-zinc-300 font-light font-serif whitespace-normal space-y-1.5 animate-fadeIn";
-      const fragmentoEstandar = document.createDocumentFragment();
-      const lineasEstandar = rawText.split(/\\n|\n/);
-      
-      let blockquoteActual = null;
+        case 'estandar':
+        case 'tradicional':
+          container.className = "text-lg leading-normal text-zinc-300 font-light font-serif whitespace-normal space-y-1.5 animate-fadeIn";
+          const fragmentoEstandar = document.createDocumentFragment();
+          const lineasEstandar = rawText.split(/\\n|\n/);
+          
+          let blockquoteActual = null;
 
-      lineasEstandar.forEach(linea => {
-        const lineaLimpia = linea.trim();
+          lineasEstandar.forEach(linea => {
+            const lineaLimpia = linea.trim();
 
-        // Detecta si la línea es parte de un epígrafe (empieza por '>' o '<blockquote>')
-        if (lineaLimpia.startsWith('>') || lineaLimpia.startsWith('<blockquote>')) {
-          if (!blockquoteActual) {
-            blockquoteActual = document.createElement('blockquote');
-            blockquoteActual.className = "border-l-2 border-zinc-600 pl-4 my-4 italic text-zinc-400 text-base space-y-1";
-            fragmentoEstandar.appendChild(blockquoteActual);
-          }
-          const pEpigrafe = document.createElement('p');
-          pEpigrafe.innerHTML = lineaLimpia.replace(/^>|<\/?blockquote>/g, '').trim();
-          blockquoteActual.appendChild(pEpigrafe);
-        } else {
-          // Si termina el epígrafe, reseteamos el contenedor acumulador
-          blockquoteActual = null;
+            if (lineaLimpia.startsWith('>') || lineaLimpia.startsWith('<blockquote>')) {
+              if (!blockquoteActual) {
+                blockquoteActual = document.createElement('blockquote');
+                blockquoteActual.className = "border-l-2 border-zinc-600 pl-4 my-4 italic text-zinc-400 text-base space-y-1";
+                fragmentoEstandar.appendChild(blockquoteActual);
+              }
+              const pEpigrafe = document.createElement('p');
+              pEpigrafe.innerHTML = lineaLimpia.replace(/^>|<\/?blockquote>/g, '').trim();
+              blockquoteActual.appendChild(pEpigrafe);
+            } else {
+              blockquoteActual = null;
 
-          const pVerso = document.createElement('p');
-          if (!lineaLimpia) {
-            pVerso.innerHTML = '&nbsp;';
-            pVerso.className = 'h-3'; 
-          } else {
-            pVerso.innerHTML = lineaLimpia;
-          }
-          fragmentoEstandar.appendChild(pVerso);
-        }
-      });
-      
-      container.appendChild(fragmentoEstandar);
-      aplicarSangriaFrancesa(container);
-      break;
+              const pVerso = document.createElement('p');
+              if (!lineaLimpia) {
+                pVerso.innerHTML = '&nbsp;';
+                pVerso.className = 'h-3'; 
+              } else {
+                pVerso.innerHTML = lineaLimpia;
+              }
+              fragmentoEstandar.appendChild(pVerso);
+            }
+          });
+          
+          container.appendChild(fragmentoEstandar);
+          aplicarSangriaFrancesa(container);
+          break;
 
         case 'preformateado':
         case 'terminal':
@@ -618,7 +616,6 @@
       if (!contenedor) return;
       contenedor.innerHTML = ''; 
 
-      // Definición de Secciones en orden jerárquico estricto
       const secciones = [
         {
           id: 'el-reino',
@@ -627,7 +624,7 @@
           color: 'text-amber-500',
           borderHover: 'hover:border-amber-500/40',
           badgeColor: 'text-amber-500',
-          matches: ['el-reino']
+          matches: ['el-reino', 'el reino']
         },
         {
           id: 'orbita-rota',
@@ -650,7 +647,6 @@
       ];
 
       secciones.forEach(sec => {
-        // Filtrar poemas del catálogo que pertenecen a esta sección
         const poemasDeSeccion = Object.keys(catalog).filter(key => {
           const poema = catalog[key];
           if (poema.binary_code || poema.is_hidden) return false;
@@ -658,12 +654,10 @@
           return sec.matches.some(m => bookVal.includes(m));
         });
 
-        // Solo renderizar la sección si existen poemas asignados a ella
         if (poemasDeSeccion.length > 0) {
           const secWrapper = document.createElement('div');
           secWrapper.className = 'space-y-4';
 
-          // Encabezado visual de la sección
           secWrapper.innerHTML = `
             <div class="border-b border-zinc-800/80 pb-2 flex items-center justify-between">
               <h2 class="font-mono text-sm tracking-widest font-bold uppercase ${sec.color}">${sec.titulo}</h2>
@@ -715,10 +709,8 @@
         if (data && data.length > 0) {
           const poemaOculto = data[0];
           
-          // Registrar en Supabase
           await registrarCodigoDescifrado(codeInput, document.getElementById("echoUser")?.value);
 
-          // Cargar dinámicamente al catálogo
           catalog[poemaOculto.key] = {
             title: poemaOculto.titulo,
             book: poemaOculto.book,
@@ -736,7 +728,6 @@
           resultDiv.classList.add('hidden');
           resultDiv.innerHTML = '';
           
-          // Muestra el poema directamente
           selectPoem(poemaOculto.key);
           
         } else {
