@@ -77,10 +77,10 @@
 </head>
 <body class="bg-[#121316] text-[#E4E4E7] selection:bg-amber-950 selection:text-amber-200">
 
-  <!-- PORTADA DE BIENVENIDA -->
+  <!-- PORTADA DE BIENVENIDA / OVERLAY -->
   <div id="welcomeOverlay" class="fixed inset-0 bg-[#121316] z-[9999] flex items-center justify-center p-8 transition-all duration-700 ease-in-out">
     <div class="max-w-3xl w-full font-code text-sm text-zinc-600 select-none leading-relaxed text-justify break-all tracking-[0.15em]">
-      01001100011000010010000001100011011010010110011001101110011001100001001000000001110110010110000100000001110110010110000100000001110110010110000100000001110110010110000100000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">SITIO</span>011100110110100101100110010101101101011100000111001001100101001000000111001001100101011100110111010101101110011011100110000100100000011101010110111001100001001000000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">ILUSIÓN</span>011011100110111101100110011010010110011001101001011001011000001001000000<!-- BOTÓN INTERFAZ_CODE --><button onclick="irDirectoATerminal()" class="font-bold text-amber-300 hover:text-amber-200 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/60 rounded px-2 py-0.5 transition-all duration-300 mx-1 focus:outline-none cursor-pointer hover:scale-105 active:scale-95 inline-block text-xs font-code tracking-normal">INTERFAZ_CODE</button>0111100100100000011000110110000101100100011000010110010101101101011011100110011001101001011001100110100101101110010011000010010000001111001001000000110001101100001011001010_<button onclick="entrarAlReino()" class="font-bold text-lg text-amber-400 hover:text-amber-300 transition-all duration-300 mx-1 focus:outline-none cursor-pointer hover:scale-105 active:scale-95 inline-block border-b border-amber-400">ENTRAR</button>_0110111001100100000011001010110110001100001001000000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">METAMORFOSIS</span>011011100110000101100100011000010010000001110000011000010111001001100101011000110110100100100000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">NADA</span>011011010110010201100001011101010111010001101110011100000110110101100102011011100110111001101110010010110000100100000011100110110100101100011001010110110101100100010011000010111001<!-- BOTÓN AUTOR REINTEGRADO EN PORTADA --><button onclick="irAAutor()" class="font-bold text-amber-300 hover:text-amber-200 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/60 rounded px-2 py-0.5 transition-all duration-300 mx-1 focus:outline-none cursor-pointer hover:scale-105 active:scale-95 inline-block text-xs font-code tracking-normal">AUTOR</button>011011010110010201101110011011100110111001001011000010010000001110011011010010110001100101011011010110010001001100001011100100110011<span class="text-amber-400 font-bold inline-block whitespace-nowrap">GREGORSAMSA</span>01100001000000110110001100001001000000110010101110011011100111000011001010111001001100000100000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">ESPERA</span>0110010001100011011001010110110101110000010000001101100011001110011001000000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">LINEAS</span>01101100011010010110111001100101011000010111001100100000011001
+      01001100011000010010000001100011011010010110011001101110011001100001001000000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">SITIO</span>011100110110100101100110010101101101011100000111001001100101001000000111001001100101011100110111010101101110011011100110000100100000011101010110111001100001001000000<!-- BOTÓN ILUSIÓN REDIRIGE A LA GALERÍA DE PORTADAS --><button onclick="irAPortadas()" class="text-amber-400 font-bold hover:text-amber-300 transition-all duration-300 focus:outline-none cursor-pointer hover:scale-105 active:scale-95 inline-block whitespace-nowrap border-b border-amber-400/40 hover:border-amber-300">ILUSIÓN</button>011011100110111101100110011010010110011001101001011001011000001001000000<!-- BOTÓN INTERFAZ_CODE --><button onclick="irDirectoATerminal()" class="font-bold text-amber-300 hover:text-amber-200 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/60 rounded px-2 py-0.5 transition-all duration-300 mx-1 focus:outline-none cursor-pointer hover:scale-105 active:scale-95 inline-block text-xs font-code tracking-normal">INTERFAZ_CODE</button>01111001001000000110001101100001011001000110000101100101011011010110111001100110011010010110011001101001011011100100110000100100000011110010010000001100011011000010110010100101101101011011_<button onclick="entrarAlReino()" class="font-bold text-lg text-amber-400 hover:text-amber-300 transition-all duration-300 mx-1 focus:outline-none cursor-pointer hover:scale-105 active:scale-95 inline-block border-b border-amber-400">ENTRAR</button>_0110111001100100000011001010110110001100001001000000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">METAMORFOSIS</span>011011100110000101100100011000010010000001110000011000010111001001100101011000110110100100100000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">NADA</span>01101101011001020110000101110101011101000110111001110000011011010110010201101110011011100110111001001011000010010000001110011011010010110001100101011011010110010001001100001011100100110111001110110010110000100000<!-- BOTÓN AUTOR --> <button onclick="irAAutor()" class="font-bold text-amber-300 hover:text-amber-200 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/60 rounded px-2 py-0.5 transition-all duration-300 mx-1 focus:outline-none cursor-pointer hover:scale-105 active:scale-95 inline-block text-xs font-code tracking-normal">AUTOR</button>011011010110010201101110011011100110111001001011000010010000001110011011010010110001100101011011010110010001001100001011100100110011001110110010110000100000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">GREGORSAMSA</span>0110010101110011011101000110001001100001000000110110001100001001000000110010101110011011100111000011001010111001001100000100000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">ESPERA</span>011000010010000001100010010000010110010001100011011001010110110101110000010000001101100011001110011001000000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">LINEAS</span>01101100011010010110111001100101011000010111001100100000011001
     </div>
   </div>
 
@@ -88,25 +88,31 @@
   <header class="h-24 fixed top-0 left-0 right-0 bg-[#121316]/90 backdrop-blur-md border-b border-zinc-800/80 z-50">
     <div class="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
       <div class="flex items-center gap-4">
-        <button onclick="irAPortada()" class="font-mono text-amber-500 hover:text-amber-400 tracking-widest text-xs border border-amber-500/30 hover:border-amber-500/60 bg-amber-950/10 hover:bg-amber-950/30 px-2 py-1 rounded transition-all flex items-center gap-1.5">
+        <button onclick="reabrirPortadaInicio()" class="font-mono text-amber-500 hover:text-amber-400 tracking-widest text-xs border border-amber-500/30 hover:border-amber-500/60 bg-amber-950/10 hover:bg-amber-950/30 px-2 py-1 rounded transition-all flex items-center gap-1.5 cursor-pointer">
           <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
           PORTAL: ACTIVO
         </button>
         <div>
-          <h1 class="text-2xl font-light tracking-[0.2em] uppercase text-zinc-100 cursor-pointer select-none" onclick="irAPortada()">El Reino</h1>
+          <h1 class="text-2xl font-light tracking-[0.2em] uppercase text-zinc-100 cursor-pointer select-none" onclick="reabrirPortadaInicio()">El Reino</h1>
           <p class="text-[9px] font-mono text-zinc-500 tracking-wider">OBRA POÉTICA (2008 - 2026)</p>
         </div>
       </div>
       
       <div class="flex items-center gap-3">
+        <button onclick="irAPortadas()" id="coversNavBtn"
+                class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-xs font-mono tracking-wider transition-colors flex items-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-book-open text-amber-500"></i>
+          <span>PORTADAS</span>
+        </button>
+
         <button onclick="changeActiveView('grid')" id="gridNavBtn"
-                class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-xs font-mono tracking-wider transition-colors flex items-center gap-2">
+                class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-xs font-mono tracking-wider transition-colors flex items-center gap-2 cursor-pointer">
           <i class="fa-solid fa-circle-nodes text-zinc-500"></i>
           <span>SECCIONES</span>
         </button>
 
         <button onclick="changeActiveView('terminal')" id="terminalNavBtn"
-                class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-xs font-mono tracking-wider transition-colors flex items-center gap-2">
+                class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-xs font-mono tracking-wider transition-colors flex items-center gap-2 cursor-pointer">
           <i class="fa-solid fa-terminal text-amber-500"></i>
           <span>TERMINAL SOFONÍAS</span>
         </button>
@@ -115,6 +121,44 @@
   </header>
 
   <div class="pt-24">
+    <!-- PANTALLA 0: GALERÍA DE PORTADAS -->
+    <div id="coversView" class="hidden p-8 animate-fadeIn min-h-[calc(100vh-6rem)]">
+      <div class="max-w-6xl mx-auto flex flex-col gap-8">
+        <div class="border-b border-zinc-800/80 pb-4 flex items-center justify-between">
+          <h2 class="font-mono text-sm tracking-widest font-bold uppercase text-amber-500">PORTADAS DEL REINO</h2>
+          <span class="font-mono text-xs text-zinc-500 tracking-wider"> EDICIONES PUBLICADAS</span>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch justify-center">
+          
+          <!-- Portada 1 -->
+<div class="bg-zinc-950 p-4 flex flex-col items-center shadow-xl">
+  <img src="https://kpvucfktjnuqltuvgflx.supabase.co/storage/v1/object/public/portadas/1_primavera_extramuros.png"
+       alt="Primavera Extramuros"
+       class="w-full h-auto mb-4">
+  <h3 class="font-mono text-sm text-zinc-200 uppercase tracking-widest font-bold mt-auto text-center">1. Primavera Extramuros</h3>
+</div>
+
+<!-- Portada 2 -->
+<div class="bg-zinc-950 p-4 flex flex-col items-center shadow-xl">
+  <img src="https://kpvucfktjnuqltuvgflx.supabase.co/storage/v1/object/public/portadas/2_orbita_rota.png"
+       alt="Órbita Rota"
+       class="w-full h-auto mb-4">
+  <h3 class="font-mono text-sm text-zinc-200 uppercase tracking-widest font-bold mt-auto text-center">2. Órbita Rota</h3>
+</div>
+
+<!-- Portada 3 -->
+<div class="bg-zinc-950 p-4 flex flex-col items-center shadow-xl">
+  <img src="https://kpvucfktjnuqltuvgflx.supabase.co/storage/v1/object/public/portadas/3_los_extramuros.png"
+       alt="Los Extramuros"
+       class="w-full h-auto mb-4">
+  <h3 class="font-mono text-sm text-zinc-200 uppercase tracking-widest font-bold mt-auto text-center">3. Los Extramuros</h3>
+</div>
+
+        </div>
+      </div>
+    </div>
+
     <!-- PANTALLA 1: GRID DE SECCIONES CON JERARQUÍA -->
     <div id="gridView" class="hidden p-8 animate-fadeIn">
       <div id="contenedor-tarjetas" class="max-w-6xl mx-auto flex flex-col gap-12"></div>
@@ -168,7 +212,7 @@
           </div>
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-            <span class="font-mono text-xs text-zinc-500">HABITANTES: <span id="visitCounter" class="text-amber-500 font-bold">000000000050</span></span>
+            <span class="font-mono text-xs text-zinc-500">HABITANTES: <span id="visitCounter" class="text-amber-500 font-bold">00000050</span></span>
           </div>
         </div>
 
@@ -292,51 +336,48 @@
       }
     }
 
-   // --- CONTADOR DE HABITANTES DE 12 DÍGITOS ---
-async function initVisitCounter() {
-  try {
-    let { data, error } = await _supabase
-      .from('Contador')
-      .select('visitas')
-      .eq('id', 1)
-      .single();
+    // --- CONTADOR DE HABITANTES ---
+    async function initVisitCounter() {
+      try {
+        let { data, error } = await _supabase
+          .from('Contador')
+          .select('visitas')
+          .eq('id', 1)
+          .single();
 
-    if (error) throw error;
+        if (error) throw error;
+        
+        let totalVisitas = data && data.visitas >= 50 ? data.visitas : 50;
 
-    let totalVisitas = data && data.visitas >= 50 ? data.visitas : 50;
+        if (!localStorage.getItem('visited_global_user')) {
+          localStorage.setItem('visited_global_user', 'true');
+          totalVisitas = totalVisitas + 1;
 
-    if (!localStorage.getItem('visited_global_user')) {
-      localStorage.setItem('visited_global_user', 'true');
-      totalVisitas = totalVisitas + 1;
+          await _supabase
+            .from('Contador')
+            .update({ visitas: totalVisitas })
+            .eq('id', 1);
 
-      await _supabase
-        .from('Contador')
-        .update({ visitas: totalVisitas })
-        .eq('id', 1);
-
-      registrarPulsion('NUEVO_HABITANTE_INGRESADO');
-    }
-
-    // Línea 320 actualizada a 12 dígitos
-    document.getElementById('visitCounter').textContent = String(totalVisitas).padStart(12, '0');
-
-    _supabase
-      .channel('cambios-contador')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'Contador', filter: 'id=eq.1' }, payload => {
-        if (payload.new && typeof payload.new.visitas === 'number') {
-          let realtimeVisitas = payload.new.visitas < 50 ? 50 : payload.new.visitas;
-          // Línea 327 actualizada a 12 dígitos
-          document.getElementById('visitCounter').textContent = String(realtimeVisitas).padStart(12, '0');
+          registrarPulsion('NUEVO_HABITANTE_INGRESADO');
         }
-      })
-      .subscribe();
 
-  } catch (err) {
-    console.error("Error en el contador:", err.message);
-    // Línea 334 actualizada a 12 dígitos
-    document.getElementById('visitCounter').textContent = "000000000050";
-  }
-}
+        document.getElementById('visitCounter').textContent = String(totalVisitas).padStart(8, '0');
+
+        _supabase
+          .channel('cambios-contador')
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'Contador', filter: 'id=eq.1' }, payload => {
+            if (payload.new && typeof payload.new.visitas === 'number') {
+              let realtimeVisitas = payload.new.visitas < 50 ? 50 : payload.new.visitas;
+              document.getElementById('visitCounter').textContent = String(realtimeVisitas).padStart(8, '0');
+            }
+          })
+          .subscribe();
+
+      } catch (err) {
+        console.error("Error en el contador:", err.message);
+        document.getElementById('visitCounter').textContent = "00000050";
+      }
+    }
 
     // --- 1. ECOS (Comentarios) ---
     async function cargarEcos() {
@@ -379,8 +420,8 @@ async function initVisitCounter() {
       const userInput = document.getElementById("echoUser");
       const msgInput = document.getElementById("echoMessage");
 
-      const pseudonimo = userInput.value.trim();
-      const mensaje = msgInput.value.trim();
+      const pseudonimo = userInput?.value.trim() || '';
+      const mensaje = msgInput?.value.trim() || '';
 
       if (!pseudonimo || !mensaje) return;
 
@@ -455,7 +496,7 @@ async function initVisitCounter() {
         
         const nuevoCatalogo = {};
         data.forEach(poema => {
-          if (poema.binary_code || poema.is_hidden === true) return; 
+          if (poema.is_hidden === true) return; 
 
           nuevoCatalogo[poema.key] = {
             title: poema.titulo,
@@ -538,7 +579,6 @@ async function initVisitCounter() {
       const rawText = poema.body_raw ? String(poema.body_raw) : '';
       container.innerHTML = ''; 
 
-      // REGISTRAR PULSIÓN DE LECTURA DE POEMA
       if (trackPulsion) {
         registrarPulsion('POEMA_LEIDO', { key: key, title: poema.title, book: poema.book });
       }
@@ -546,7 +586,7 @@ async function initVisitCounter() {
       switch (renderActual) {
         case 'estandar':
         case 'tradicional':
-          container.className = "text-lg leading-normal text-zinc-300 font-light font-serif whitespace-normal space-y-1 animate-fadeIn";
+          container.className = "text-lg leading-normal text-zinc-300 font-light font-serif whitespace-normal space-y-1.5 animate-fadeIn";
           const fragmentoEstandar = document.createDocumentFragment();
           const lineasEstandar = rawText.split(/\\n|\n/);
           
@@ -632,7 +672,7 @@ async function initVisitCounter() {
           break;
 
         default:
-          container.className = "text-lg leading-relaxed text-zinc-300 font-light font-serif whitespace-normal space-y-1 animate-fadeIn";
+          container.className = "text-lg leading-relaxed text-zinc-300 font-light font-serif whitespace-normal space-y-4 animate-fadeIn";
           container.innerHTML = rawText.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
           break;
       }
@@ -677,7 +717,7 @@ async function initVisitCounter() {
       secciones.forEach(sec => {
         const poemasDeSeccion = Object.keys(catalog).filter(key => {
           const poema = catalog[key];
-          if (poema.binary_code || poema.is_hidden) return false;
+          if (poema.is_hidden) return false;
           const bookVal = (poema.book || '').toLowerCase().trim();
           return sec.matches.some(m => bookVal.includes(m));
         });
@@ -774,18 +814,23 @@ async function initVisitCounter() {
     function changeActiveView(newView) {
       activeView = newView;
 
+      document.getElementById('coversView')?.classList.toggle('hidden', activeView !== 'covers');
       document.getElementById('gridView')?.classList.toggle('hidden', activeView !== 'grid');
       document.getElementById('readView')?.classList.toggle('hidden', activeView !== 'read');
       document.getElementById('authorView')?.classList.toggle('hidden', activeView !== 'author');
       document.getElementById('terminalView')?.classList.toggle('hidden', activeView !== 'terminal');
 
+      const coversBtn = document.getElementById('coversNavBtn');
       const gridBtn = document.getElementById('gridNavBtn');
       const termBtn = document.getElementById('terminalNavBtn');
 
+      if (coversBtn) coversBtn.classList.remove('border-amber-500/50', 'bg-zinc-800');
       if (gridBtn) gridBtn.classList.remove('border-amber-500/50', 'bg-zinc-800');
       if (termBtn) termBtn.classList.remove('border-amber-500/50', 'bg-zinc-800');
 
-      if (activeView === 'grid') {
+      if (activeView === 'covers') {
+        if (coversBtn) coversBtn.classList.add('border-amber-500/50', 'bg-zinc-800');
+      } else if (activeView === 'grid') {
         if (gridBtn) gridBtn.classList.add('border-amber-500/50', 'bg-zinc-800');
       } else if (activeView === 'terminal') {
         if (termBtn) termBtn.classList.add('border-amber-500/50', 'bg-zinc-800');
@@ -809,6 +854,11 @@ async function initVisitCounter() {
       changeActiveView('author');
     }
 
+    function irAPortadas() {
+      cerrarPortada();
+      changeActiveView('covers');
+    }
+
     function cerrarPortada() {
       const overlay = document.getElementById('welcomeOverlay');
       if (overlay) {
@@ -819,15 +869,14 @@ async function initVisitCounter() {
       }
     }
 
-    function irAPortada() {
+    function reabrirPortadaInicio() {
       const overlay = document.getElementById('welcomeOverlay');
       if (overlay) {
         overlay.style.display = 'flex';
         setTimeout(() => {
           overlay.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
-        }, 50);
+        }, 10);
       }
-      changeActiveView('read');
     }
   </script>
 </body>
