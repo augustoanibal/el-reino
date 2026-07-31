@@ -168,7 +168,7 @@
           </div>
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-            <span class="font-mono text-xs text-zinc-500">HABITANTES: <span id="visitCounter" class="text-amber-500 font-bold">00000050</span></span>
+            <span class="font-mono text-xs text-zinc-500">HABITANTES: <span id="visitCounter" class="text-amber-500 font-bold">000000000050</span></span>
           </div>
         </div>
 
@@ -292,48 +292,51 @@
       }
     }
 
-    // --- CONTADOR DE HABITANTES ---
-    async function initVisitCounter() {
-      try {
-        let { data, error } = await _supabase
-          .from('Contador')
-          .select('visitas')
-          .eq('id', 1)
-          .single();
+   // --- CONTADOR DE HABITANTES DE 12 DÍGITOS ---
+async function initVisitCounter() {
+  try {
+    let { data, error } = await _supabase
+      .from('Contador')
+      .select('visitas')
+      .eq('id', 1)
+      .single();
 
-        if (error) throw error;
-        
-        let totalVisitas = data && data.visitas >= 50 ? data.visitas : 50;
+    if (error) throw error;
 
-        if (!localStorage.getItem('visited_global_user')) {
-          localStorage.setItem('visited_global_user', 'true');
-          totalVisitas = totalVisitas + 1;
+    let totalVisitas = data && data.visitas >= 50 ? data.visitas : 50;
 
-          await _supabase
-            .from('Contador')
-            .update({ visitas: totalVisitas })
-            .eq('id', 1);
+    if (!localStorage.getItem('visited_global_user')) {
+      localStorage.setItem('visited_global_user', 'true');
+      totalVisitas = totalVisitas + 1;
 
-          registrarPulsion('NUEVO_HABITANTE_INGRESADO');
-        }
+      await _supabase
+        .from('Contador')
+        .update({ visitas: totalVisitas })
+        .eq('id', 1);
 
-        document.getElementById('visitCounter').textContent = String(totalVisitas).padStart(8, '0');
-
-        _supabase
-          .channel('cambios-contador')
-          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'Contador', filter: 'id=eq.1' }, payload => {
-            if (payload.new && typeof payload.new.visitas === 'number') {
-              let realtimeVisitas = payload.new.visitas < 50 ? 50 : payload.new.visitas;
-              document.getElementById('visitCounter').textContent = String(realtimeVisitas).padStart(8, '0');
-            }
-          })
-          .subscribe();
-
-      } catch (err) {
-        console.error("Error en el contador:", err.message);
-        document.getElementById('visitCounter').textContent = "00000050";
-      }
+      registrarPulsion('NUEVO_HABITANTE_INGRESADO');
     }
+
+    // Línea 320 actualizada a 12 dígitos
+    document.getElementById('visitCounter').textContent = String(totalVisitas).padStart(12, '0');
+
+    _supabase
+      .channel('cambios-contador')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'Contador', filter: 'id=eq.1' }, payload => {
+        if (payload.new && typeof payload.new.visitas === 'number') {
+          let realtimeVisitas = payload.new.visitas < 50 ? 50 : payload.new.visitas;
+          // Línea 327 actualizada a 12 dígitos
+          document.getElementById('visitCounter').textContent = String(realtimeVisitas).padStart(12, '0');
+        }
+      })
+      .subscribe();
+
+  } catch (err) {
+    console.error("Error en el contador:", err.message);
+    // Línea 334 actualizada a 12 dígitos
+    document.getElementById('visitCounter').textContent = "000000000050";
+  }
+}
 
     // --- 1. ECOS (Comentarios) ---
     async function cargarEcos() {
@@ -543,7 +546,7 @@
       switch (renderActual) {
         case 'estandar':
         case 'tradicional':
-          container.className = "text-lg leading-normal text-zinc-300 font-light font-serif whitespace-normal space-y-1.5 animate-fadeIn";
+          container.className = "text-lg leading-normal text-zinc-300 font-light font-serif whitespace-normal space-y-1 animate-fadeIn";
           const fragmentoEstandar = document.createDocumentFragment();
           const lineasEstandar = rawText.split(/\\n|\n/);
           
@@ -629,7 +632,7 @@
           break;
 
         default:
-          container.className = "text-lg leading-relaxed text-zinc-300 font-light font-serif whitespace-normal space-y-4 animate-fadeIn";
+          container.className = "text-lg leading-relaxed text-zinc-300 font-light font-serif whitespace-normal space-y-1 animate-fadeIn";
           container.innerHTML = rawText.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
           break;
       }
