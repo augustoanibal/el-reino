@@ -276,6 +276,22 @@
         cargarCodigosDescifrados();
     });
 
+    // --- REGISTRO DE PULSIÓN / INTERACCIÓN EN SUPABASE ---
+    async function registrarPulsion(tipoAccion, detallesObj = {}) {
+      try {
+        const pseudonimo = document.getElementById("echoUser")?.value || 'HABITANTE_ANÓNIMO';
+        await _supabase.from('interacciones').insert([{
+          tipo_accion: tipoAccion,
+          poema_key: detallesObj.key || null,
+          poema_titulo: detallesObj.title || null,
+          pseudonimo: pseudonimo,
+          detalles: JSON.stringify(detallesObj)
+        }]);
+      } catch (err) {
+        console.warn("No se pudo registrar la pulsión:", err.message);
+      }
+    }
+
     // --- CONTADOR DE HABITANTES ---
     async function initVisitCounter() {
       try {
@@ -297,6 +313,8 @@
             .from('Contador')
             .update({ visitas: totalVisitas })
             .eq('id', 1);
+
+          registrarPulsion('NUEVO_HABITANTE_INGRESADO');
         }
 
         document.getElementById('visitCounter').textContent = String(totalVisitas).padStart(8, '0');
@@ -371,6 +389,7 @@
         alert("Error al enviar el eco. Revisa tu conexión.");
         console.error(error);
       } else {
+        registrarPulsion('PULSION_ECO_ENVIADO', { pseudonimo, mensaje });
         msgInput.value = '';
         cargarEcos();
       }
@@ -420,6 +439,7 @@
         }]);
 
       if (!error) {
+        registrarPulsion('PULSION_CODIGO_DESCIFRADO', { codigo: codigoIngresado });
         cargarCodigosDescifrados();
       }
     }
@@ -452,10 +472,10 @@
         dibujarGridDePoemas();
         
         if (catalog['silencio']) {
-          selectPoem('silencio');
+          selectPoem('silencio', false);
         } else {
           const keys = Object.keys(catalog);
-          if (keys.length > 0) selectPoem(keys[0]);
+          if (keys.length > 0) selectPoem(keys[0], false);
         }
 
       } catch (err) {
@@ -480,7 +500,7 @@
       });
     }
 
-    function selectPoem(key) {
+    function selectPoem(key, trackPulsion = true) {
       const poema = catalog[key];
       if (!poema) return;
       
@@ -514,6 +534,11 @@
       tituloHTML.textContent = poema.title || 'SIN TÍTULO';
       const rawText = poema.body_raw ? String(poema.body_raw) : '';
       container.innerHTML = ''; 
+
+      // REGISTRAR PULSIÓN DE LECTURA DE POEMA
+      if (trackPulsion) {
+        registrarPulsion('POEMA_LEIDO', { key: key, title: poema.title, book: poema.book });
+      }
       
       switch (renderActual) {
         case 'estandar':
@@ -681,7 +706,7 @@
               <h3 class="text-xl font-bold text-zinc-100 group-hover:text-zinc-50 transition-colors uppercase">${poema.title || 'Sin Título'}</h3>
               <p class="font-mono text-zinc-500 text-[11px] mt-3 line-clamp-2 leading-relaxed tracking-wide">${extracto || 'Sin contenido disponible.'}</p>
             `;
-            card.onclick = () => { selectPoem(key); };
+            card.onclick = () => { selectPoem(key, true); };
             gridDiv.appendChild(card);
           });
 
@@ -728,9 +753,10 @@
           resultDiv.classList.add('hidden');
           resultDiv.innerHTML = '';
           
-          selectPoem(poemaOculto.key);
+          selectPoem(poemaOculto.key, true);
           
         } else {
+          registrarPulsion('PULSION_FALLO_CODIGO_BINARIO', { intento: codeInput });
           resultDiv.classList.remove('hidden');
           resultDiv.innerHTML = `<span class="text-red-500 font-bold">ERROR: CÓDIGO INVÁLIDO</span><p class="text-[11px] text-zinc-500 mt-1">El descifrado falló. Revisa los bits del libro físico.</p>`;
         }
@@ -761,6 +787,8 @@
       } else if (activeView === 'terminal') {
         if (termBtn) termBtn.classList.add('border-amber-500/50', 'bg-zinc-800');
       }
+
+      registrarPulsion('CAMBIO_DE_VISTA', { vista: newView });
     }
 
     function entrarAlReino() {
