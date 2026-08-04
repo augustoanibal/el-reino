@@ -592,7 +592,7 @@
       switch (renderActual) {
         case 'estandar':
         case 'tradicional':
-          container.className = "text-lg leading-normal text-zinc-300 font-light font-serif whitespace-normal space-y-1.5 animate-fadeIn";
+          container.className = "text-lg leading-none text-zinc-300 font-light font-serif whitespace-normal space-y-1.5 animate-fadeIn";
           const fragmentoEstandar = document.createDocumentFragment();
           const lineasEstandar = rawText.split(/\\n|\n/);
           
@@ -616,7 +616,7 @@
               const pVerso = document.createElement('p');
               if (!lineaLimpia) {
                 pVerso.innerHTML = '&nbsp;';
-                pVerso.className = 'h-3'; 
+                pVerso.className = 'h-6'; 
               } else {
                 pVerso.innerHTML = lineaLimpia;
               }
