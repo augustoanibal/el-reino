@@ -257,6 +257,7 @@
     window.addEventListener('DOMContentLoaded', () => {
         fetchPoemsFromSupabase();
         initVisitCounter();
+        initInteraccionesListener();
         cargarEcos();
         cargarCodigosDescifrados();
     });
@@ -274,6 +275,15 @@
       } catch (err) {
         console.warn("No se pudo registrar la pulsión:", err.message);
       }
+    }
+
+    function initInteraccionesListener() {
+      _supabase
+        .channel('interacciones-live')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'interacciones' }, payload => {
+          console.log("Nueva interacción registrada en Supabase:", payload.new);
+        })
+        .subscribe();
     }
 
     async function initVisitCounter() {
@@ -515,38 +525,22 @@
       switch (renderActual) {
         case 'estandar':
         case 'tradicional':
-          container.className = "text-lg leading-none text-zinc-300 font-light font-serif whitespace-normal space-y-1.5 animate-fadeIn";
-          const fragmentoEstandar = document.createDocumentFragment();
-          const lineasEstandar = rawText.split(/\\n|\n/);
+          container.className = "text-lg leading-relaxed text-zinc-300 font-light font-serif whitespace-normal space-y-3 animate-fadeIn";
           
-          let blockquoteActual = null;
-
-          lineasEstandar.forEach(linea => {
+          const lineasEstandar = rawText.split(/\r?\n|\\n/);
+          
+          container.innerHTML = lineasEstandar.map(linea => {
             const lineaLimpia = linea.trim();
-
-            if (lineaLimpia.startsWith('>') || lineaLimpia.startsWith('<blockquote>')) {
-              if (!blockquoteActual) {
-                blockquoteActual = document.createElement('blockquote');
-                blockquoteActual.className = "border-l-2 border-zinc-600 pl-4 my-4 italic text-zinc-400 text-base space-y-1";
-                fragmentoEstandar.appendChild(blockquoteActual);
-              }
-              const pEpigrafe = document.createElement('p');
-              pEpigrafe.textContent = lineaLimpia.replace(/^>|<\/?blockquote>/g, '').trim();
-              blockquoteActual.appendChild(pEpigrafe);
-            } else {
-              blockquoteActual = null;
-              const pVerso = document.createElement('p');
-              if (!lineaLimpia) {
-                pVerso.innerHTML = '&nbsp;';
-                pVerso.className = 'h-6'; 
-              } else {
-                pVerso.textContent = lineaLimpia;
-              }
-              fragmentoEstandar.appendChild(pVerso);
+            if (!lineaLimpia) return '<p class="h-4">&nbsp;</p>';
+            
+            if (lineaLimpia.startsWith('>') || lineaLimpia.startsWith('&gt;')) {
+              const textoCita = lineaLimpia.replace(/^(&gt;|>)/, '').trim();
+              return `<blockquote class="border-l-2 border-zinc-600 pl-4 my-4 italic text-zinc-400 text-base">${textoCita}</blockquote>`;
             }
-          });
+            
+            return `<p class="leading-relaxed">${lineaLimpia}</p>`;
+          }).join('');
           
-          container.appendChild(fragmentoEstandar);
           aplicarSangriaFrancesa(container);
           break;
 
