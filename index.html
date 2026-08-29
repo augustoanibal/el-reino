@@ -141,27 +141,25 @@
     </div>
 
     <!-- PANTALLA 1: GRID DE SECCIONES CON JERARQUÍA -->
-    <div id="gridView" class="hidden p-8 animate-fadeIn">
+    <div id="gridView" class="p-8 animate-fadeIn">
       <div id="contenedor-tarjetas" class="max-w-6xl mx-auto flex flex-col gap-12"></div>
     </div>
 
     <!-- PANTALLA 2: LECTURA DE POEMAS -->
-<div id="readView" class="min-h-[calc(100vh-6rem)] flex justify-center items-start p-6 lg:p-16">
-  <main class="max-w-3xl w-full flex flex-col gap-12">
-    <div id="poemWrapper" class="w-full">
-      <div id="poemMetadataHeader" class="mb-8 font-mono text-xs border-b border-zinc-800/40 pb-4 flex justify-between items-center">
-         <span id="poemBookLabel" class="text-amber-500 uppercase tracking-widest font-bold">EL REINO</span>
-         <span id="poemRenderBadge" class="text-zinc-500 border border-zinc-800 px-2 py-0.5 rounded text-[10px]">render: estandar</span>
-      </div>
-      <div id="poemContent" class="space-y-6">
-        <h2 id="poemTitle" class="text-3xl lg:text-4xl font-light tracking-wide text-zinc-100 uppercase font-serif">CONECTANDO...</h2>
-        <div id="poemBodyContainer" class="text-lg text-zinc-400 font-light font-serif">
-          <p class="animate-pulse">Cargando poema desde Supabase...</p>
+    <div id="readView" class="hidden min-h-[calc(100vh-6rem)] flex justify-center items-start p-6 lg:p-16">
+      <main class="max-w-3xl w-full flex flex-col gap-12">
+        <div id="poemWrapper" class="w-full">
+          <div id="poemMetadataHeader" class="mb-8 font-mono text-xs border-b border-zinc-800/40 pb-4 flex justify-between items-center">
+             <span id="poemBookLabel" class="text-amber-500 uppercase tracking-widest font-bold">EL REINO</span>
+             <span id="poemRenderBadge" class="text-zinc-500 border border-zinc-800 px-2 py-0.5 rounded text-[10px]">render: estandar</span>
+          </div>
+          <div id="poemContent" class="space-y-6">
+            <h2 id="poemTitle" class="text-3xl lg:text-4xl font-light tracking-wide text-zinc-100 uppercase">CARGANDO...</h2>
+            <div id="poemBodyContainer" class="text-lg text-zinc-300 font-light"></div>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
-  </main>
-</div>
 
     <!-- PANTALLA 3: DATOS DEL AUTOR CON BIODATA COMPLETA -->
     <div id="authorView" class="hidden min-h-[calc(100vh-6rem)] flex justify-center items-start p-6 lg:p-16 animate-fadeIn">
@@ -249,7 +247,7 @@
   </div>
 
   <script>
-    let activeView = 'read'; 
+    let activeView = 'grid'; 
     const SUPABASE_URL = "https://kpvucfktjnuqltuvgflx.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwdnVjZmt0am51cWx0dXZnZmx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjk5MzIsImV4cCI6MjA5OTcwNTkzMn0.qV51Slxgz9pRnlGzLQB404SybQz4gOkDIbwSFnNxD-Q";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -451,13 +449,6 @@
         
         catalog = nuevoCatalogo;
         dibujarGridDePoemas();
-        
-        if (catalog['silencio']) {
-          selectPoem('silencio', false);
-        } else {
-          const keys = Object.keys(catalog);
-          if (keys.length > 0) selectPoem(keys[0], false);
-        }
 
       } catch (err) {
         console.error("Error cargando poemas desde Supabase:", err.message);
@@ -744,13 +735,7 @@
 
     function entrarAlReino() {
       cerrarPortada();
-      const keys = Object.keys(catalog);
-      if (keys.length > 0) {
-        const defaultKey = catalog['silencio'] ? 'silencio' : keys[0];
-        selectPoem(defaultKey, true);
-      } else {
-        changeActiveView('grid');
-      }
+      changeActiveView('grid');
     }
 
     function irDirectoATerminal() { cerrarPortada(); changeActiveView('terminal'); }
