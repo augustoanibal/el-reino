@@ -1,4 +1,519 @@
-case 'estandar':
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EL REINO - Augusto Aníbal Toledo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght=0,400;0,500;1,400&family=Source+Serif+4:ital,opsz,wght=300;400;600;700&family=Space+Grotesk:wght=400;700&family=Fira+Code:wght=300;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <!-- Supabase JavaScript Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Source Serif 4"', 'Lora', 'serif'],
+                        mono: ['"Space Grotesk"', 'monospace'],
+                        code: ['"Fira Code"', 'monospace'],
+                    },
+                    animation: {
+                        fadeIn: 'fadeIn 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(4px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Source Serif 4', serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #121212; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #2c2c2c; border-radius: 2px; }
+        
+        .poem-card {
+            background: #09090b;
+            border: 1px solid #18181b;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .collage-canvas {
+            position: relative;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px dashed rgba(239, 68, 68, 0.1);
+            overflow: hidden;
+        }
+        .collage-item {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        #poemBodyContainer blockquote {
+            font-size: 0.875rem;
+            padding-left: 1.5rem;
+            border-left: 2px solid #3f3f46;
+            color: #a1a1aa;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+            display: block;
+        }
+
+        /* DISEÑO DE SANGRÍA FRANCESA */
+        .sangria-francesa-aplicada {
+            padding-left: 2rem;
+            text-indent: -2rem;
+        }
+    </style>
+</head>
+<body class="bg-[#121316] text-[#E4E4E7] selection:bg-amber-950 selection:text-amber-200">
+
+  <!-- PORTADA DE BIENVENIDA / OVERLAY -->
+  <div id="welcomeOverlay" class="fixed inset-0 bg-[#121316] z-[9999] flex items-center justify-center p-8 transition-all duration-700 ease-in-out">
+    <div class="max-w-3xl w-full font-code text-sm text-zinc-600 select-none leading-relaxed text-justify break-all tracking-[0.15em]">
+      01001100011000010010000001100011011010010110011001101110011001100001001000000011100110110100101100110010101101101011100000111001001110011011010010110011001010110110101110000011100100111001101101001011001100101011011010111000001110010011110010010000001100011011000010110010001100001100101100101100000100100000011001010010110110101101111001101110011011100<span class="text-amber-400 font-bold inline-block whitespace-nowrap">SITIO</span>1001000000111001001100101011100110111010101101110011011100110000100100000011101010110111001100001001000000<button onclick="irAPortadas()" class="text-amber-400 font-bold hover:text-amber-300 transition-all duration-300 focus:outline-none cursor-pointer hover:scale-105 active:scale-95 inline-block whitespace-nowrap border-b border-amber-400/40 hover:border-amber-300">LIBROS</button>0111001101101001011001100101011011010111000001110010011001001101110011011110110011001101001011001100110<button onclick="irDirectoATerminal()" class="font-bold text-amber-300 hover:text-amber-200 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/60 rounded px-2 py-0.5 transition-all duration-300 mx-1 focus:outline-none cursor-pointer hover:scale-105 active:scale-95 inline-block text-xs font-code tracking-normal">INTERFAZ_CODE</button>011001010110110101101110011001100110100101100110011010010110111001001100001001000000111100100100000011000110_<button onclick="entrarAlReino()" class="font-bold text-lg text-amber-400 hover:text-amber-300 transition-all duration-300 mx-1 focus:outline-none cursor-pointer hover:scale-105 active:scale-95 inline-block border-b border-amber-400">ENTRAR</button>_011011100110010000001100101011011000110000100100000001110011011010010110011001010110110101110000011100100110010<span class="text-amber-400 font-bold inline-block whitespace-nowrap">METAMORFOSIS</span>011011100110000101100100011000010010000001110000011000010111001001100101011000110110100100100000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">NADA</span>10010110000100100000011100110110001100101011011010110010001001100001011100100110111001110110010110000100000<button onclick="irAAutor()" class="font-bold text-amber-300 hover:text-amber-200 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/60 rounded px-2 py-0.5 transition-all duration-300 mx-1 focus:outline-none cursor-pointer hover:scale-105 active:scale-95 inline-block text-xs font-code tracking-normal">AUTOR</button>011011010110010201101110011011100110111001001011000010010000001110011011010010110001100101011011010110010001001100001011100100110011001110110010110000100000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">GREGORSAMSA</span>0110010101110011011101000110001001100001000000110110001100001001000000110010101110011011100111000011001010111001001100000100000<span class="text-amber-400 font-bold inline-block whitespace-nowrap">ESPERA</span>0110000100100000011000100100000101100100011000110110010101101101011100000100<span class="text-amber-400 font-bold inline-block whitespace-nowrap">LINEAS</span>011011000110100101101110011001010110000101110011001000000110011100001000001101100011001110011001000000
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="h-24 fixed top-0 left-0 right-0 bg-[#121316]/90 backdrop-blur-md border-b border-zinc-800/80 z-50">
+    <div class="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <button onclick="reabrirPortadaInicio()" class="font-mono text-amber-500 hover:text-amber-400 tracking-widest text-xs border border-amber-500/30 hover:border-amber-500/60 bg-amber-950/10 hover:bg-amber-950/30 px-2 py-1 rounded transition-all flex items-center gap-1.5 cursor-pointer">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+          PORTAL: ACTIVO
+        </button>
+        <div>
+          <h1 class="text-2xl font-light tracking-[0.2em] uppercase text-zinc-100 cursor-pointer select-none" onclick="reabrirPortadaInicio()">El Reino</h1>
+          <p class="text-[9px] font-mono text-zinc-500 tracking-wider">PANORAMA (2008 - 2026)</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-3">
+        <button onclick="changeActiveView('grid')" id="gridNavBtn"
+                class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-xs font-mono tracking-wider transition-colors flex items-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-circle-nodes text-zinc-500"></i>
+          <span>SECCIONES</span>
+        </button>
+
+        <button onclick="changeActiveView('terminal')" id="terminalNavBtn"
+                class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-xs font-mono tracking-wider transition-colors flex items-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-terminal text-amber-500"></i>
+          <span>TERMINAL SOFONÍAS</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="pt-24">
+    <!-- PANTALLA 0: GALERÍA DE PORTADAS (LIBROS) -->
+    <div id="coversView" class="hidden p-8 animate-fadeIn min-h-[calc(100vh-6rem)]">
+      <div class="max-w-6xl mx-auto flex flex-col gap-8">
+        <div class="border-b border-zinc-800/80 pb-4 flex items-center justify-between">
+          <h2 class="font-mono text-sm tracking-widest font-bold uppercase text-amber-500">PORTADAS DEL REINO</h2>
+          <span class="font-mono text-xs text-zinc-500 tracking-wider">EDICIONES PUBLICADAS</span>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch justify-center">
+          <div class="bg-zinc-950 p-4 flex flex-col items-center shadow-xl">
+            <img src="https://kpvucfktjnuqltuvgflx.supabase.co/storage/v1/object/public/portadas/1_primavera_extramuros.png" alt="Primavera Extramuros" class="w-full h-auto mb-4">
+            <h3 class="font-mono text-[10px] text-zinc-200 uppercase tracking-widest font-bold mt-auto text-center">Primavera Extramuros (2018)<br>Diseño: Jhon Toledo<br>Arte: W.M. Ccoto</h3>
+          </div>
+          <div class="bg-zinc-950 p-4 flex flex-col items-center shadow-xl">
+            <img src="https://kpvucfktjnuqltuvgflx.supabase.co/storage/v1/object/public/portadas/2_orbita_rota.png" alt="Órbita Rota" class="w-full h-auto mb-4">
+            <h3 class="font-mono text-[10px] text-zinc-200 uppercase tracking-widest font-bold mt-auto text-center">Órbita Rota (2019)<br>Diseño: Jhon Toledo<br>Arte: Andrés Pio Cotrina</h3>
+          </div>
+          <div class="bg-zinc-950 p-4 flex flex-col items-center shadow-xl">
+            <img src="https://kpvucfktjnuqltuvgflx.supabase.co/storage/v1/object/public/portadas/3_los_extramuros.png" alt="Los Extramuros" class="w-full h-auto mb-4">
+            <h3 class="font-mono text-[10px] text-zinc-200 uppercase tracking-widest font-bold mt-auto text-center">Los Extramuros (2024)<br>Diseño: Jhon Toledo<br>Arte: W.M. Ccoto</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANTALLA 1: GRID DE SECCIONES CON JERARQUÍA -->
+    <div id="gridView" class="hidden p-8 animate-fadeIn">
+      <div id="contenedor-tarjetas" class="max-w-6xl mx-auto flex flex-col gap-12"></div>
+    </div>
+
+    <!-- PANTALLA 2: LECTURA DE POEMAS -->
+    <div id="readView" class="min-h-[calc(100vh-6rem)] flex justify-center items-start p-6 lg:p-16">
+      <main class="max-w-3xl w-full flex flex-col gap-12">
+        <div id="poemWrapper" class="w-full">
+          <div id="poemMetadataHeader" class="mb-8 font-mono text-xs border-b border-zinc-800/40 pb-4 flex justify-between items-center">
+             <span id="poemBookLabel" class="text-amber-500 uppercase tracking-widest font-bold">EL REINO</span>
+             <span id="poemRenderBadge" class="text-zinc-500 border border-zinc-800 px-2 py-0.5 rounded text-[10px]">render: estandar</span>
+          </div>
+          <div id="poemContent" class="space-y-6">
+            <h2 id="poemTitle" class="text-3xl lg:text-4xl font-light tracking-wide text-zinc-100 uppercase">CARGANDO...</h2>
+            <div id="poemBodyContainer" class="text-lg text-zinc-300 font-light"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- PANTALLA 3: DATOS DEL AUTOR CON BIODATA COMPLETA -->
+    <div id="authorView" class="hidden min-h-[calc(100vh-6rem)] flex justify-center items-start p-6 lg:p-16 animate-fadeIn">
+      <main class="max-w-3xl w-full flex flex-col gap-8">
+        <div class="font-code text-xs text-amber-400/90 bg-zinc-950/60 p-8 rounded-xl border border-zinc-800/80 max-w-3xl mx-auto leading-relaxed space-y-4">
+          <p class="text-justify">
+            <strong class="text-amber-500 font-bold text-sm tracking-wide">AUGUSTO ANÍBAL TOLEDO (Tacna)</strong> siguió el rumbo de las letras y la lingüística, es egresado de la Universidad Nacional de San Agustín de Arequipa y con estudios de Maestría en Investigación e Innovación Científica en la Universidad Privada de Tacna. Su trayectoria cultural ha sido reconocida con la Resolución Municipal N.º 0299-2022 por su aporte literario y otra resolución en 2011 por organizar el conversatorio Perspectivas Literarias en la Región Sur en Tacna.
+          </p>
+          <p class="text-justify">
+            Su activa participación en el ecosistema cultural lo ha llevado a ser jurado para el Ministerio de Cultura, Gobiernos Regionales y UGELs de Arequipa y Tacna en certámenes como el Concurso Nacional de Oratoria (2024), PERÚ LEE (2023), el Premio José María Arguedas (2021 y 2023) y Poeta Joven (2018-2019).
+          </p>
+          <p class="text-justify">
+            Como poeta, obtuvo el primer puesto en los concursos Casa Basadre (2008) y Casa Zela (2009), y años después decidió publicar los títulos de los poemarios Primavera Extramuros (2018), Órbita Rota (2019) y Los Extramuros (2024). Además, ha colaborado en las revistas Cinosargo (Chile), Groenlandia (España) y Delirium Tremens (Perú), y fue integrado en la antología Buganvilla (2015).
+          </p>
+          <p class="text-justify">
+            Siempre dispuesto a compartir saberes, vuelca su experiencia en espacios académicos y de divulgación; en 2024, dictó charlas y talleres en el FESTILEC, el Centro Cultural Liber Forti y la Universidad Nacional Jorge Basadre Grohmann (bajo Resolución N°8149-2024-FECH). Esta labor formativa se complementa con el diseño de talleres de creación de textos desde 2018 y su constante participación en encuentros poéticos como los recitales.
+          </p>
+        </div>
+      </main>
+    </div>
+
+    <!-- PANTALLA 4: TERMINAL SOFONÍAS -->
+    <div id="terminalView" class="hidden min-h-[calc(100vh-6rem)] flex justify-center items-start p-6 lg:p-16 animate-fadeIn">
+      <main class="max-w-xl w-full flex flex-col gap-6">
+        <div class="border-b border-zinc-800/60 pb-4 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-terminal text-amber-500"></i>
+            <h2 class="text-lg font-mono tracking-wider uppercase text-zinc-100">ESPACIO SÍNCRONO</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+            <span class="font-mono text-xs text-zinc-500">HABITANTES: <span id="visitCounter" class="text-amber-500 font-bold">00000050</span></span>
+          </div>
+        </div>
+
+        <div class="p-5 bg-black border border-amber-500/20 rounded-2xl">
+          <h4 class="font-mono text-xs text-amber-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+            <i class="fa-solid fa-code"></i> TERMINAL SOFONÍAS
+          </h4>
+          <p class="text-zinc-500 text-[11px] mb-3 font-mono">Introduce los ocho dígitos del código binario del libro físico para romper el cifrado:</p>
+          <div class="flex gap-2">
+            <input type="text" id="binaryInput" placeholder="Ej: 00001010" maxlength="8" class="flex-1 bg-zinc-900 border border-zinc-800 rounded px-3 py-2 text-xs font-mono text-amber-400 focus:outline-none focus:border-amber-500">
+            <button onclick="decodeBinary()" class="bg-amber-600 hover:bg-amber-700 text-black font-mono text-xs font-bold px-4 py-2 rounded transition-colors cursor-pointer">
+              DESCIFRAR
+            </button>
+          </div>
+          <div id="binaryResult" class="mt-3 text-xs font-mono text-zinc-400 hidden p-3 bg-zinc-900 rounded border border-zinc-800"></div>
+        </div>
+
+        <div class="bg-[#18191C] border border-zinc-800 rounded-xl p-6 shadow-2xl space-y-6">
+          <div>
+            <div class="flex items-center gap-2 mb-3 text-amber-400 font-code text-xs tracking-wider uppercase font-semibold">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+              ECO DE LOS VISITANTES (GLOBAL)
+            </div>
+            <div id="ecosList" class="space-y-3 max-h-52 overflow-y-auto pr-1 custom-scrollbar">
+              <div class="p-3 bg-[#121316] border border-zinc-800/80 rounded-lg text-xs text-zinc-500 italic">Cargando ecos...</div>
+            </div>
+          </div>
+
+          <form id="echoForm" onsubmit="enviarEco(event)" class="space-y-3">
+            <input type="text" id="echoUser" placeholder="Seudónimo..." required class="w-full bg-[#121316] border border-zinc-800 focus:border-amber-500/60 rounded-lg px-4 py-2.5 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none transition-all font-code" />
+            <div class="relative">
+              <input type="text" id="echoMessage" placeholder="Escribe tu eco en el Reino..." required class="w-full bg-[#121316] border border-zinc-800 focus:border-amber-500/60 rounded-lg pl-4 pr-10 py-2.5 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none transition-all font-code" />
+              <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 text-amber-400 hover:text-amber-300 p-1.5 transition-transform active:scale-95 cursor-pointer" title="Enviar eco">
+                <svg class="w-4 h-4 transform rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+              </button>
+            </div>
+          </form>
+
+          <hr class="border-zinc-800/60 my-4" />
+
+          <div>
+            <div class="flex items-center gap-2 mb-3 text-amber-400 font-code text-xs tracking-wider uppercase font-semibold">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+              CÓDIGOS DESCIFRADOS
+            </div>
+            <div id="codigosList" class="space-y-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar font-code text-xs">
+              <div class="p-3 bg-[#121316] border border-zinc-800/80 rounded-lg text-xs text-zinc-500 italic">Cargando bitácora de códigos...</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    let activeView = 'read'; 
+    const SUPABASE_URL = "https://kpvucfktjnuqltuvgflx.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwdnVjZmt0am51cWx0dXZnZmx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjk5MzIsImV4cCI6MjA5OTcwNTkzMn0.qV51Slxgz9pRnlGzLQB404SybQz4gOkDIbwSFnNxD-Q";
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let catalog = {};
+
+    window.addEventListener('DOMContentLoaded', () => {
+        fetchPoemsFromSupabase();
+        initVisitCounter();
+        cargarEcos();
+        cargarCodigosDescifrados();
+    });
+
+    async function registrarPulsion(tipoAccion, detallesObj = {}) {
+      try {
+        const pseudonimo = document.getElementById("echoUser")?.value || 'HABITANTE_ANÓNIMO';
+        await _supabase.from('interacciones').insert([{
+          tipo_accion: tipoAccion,
+          poema_key: detallesObj.key || null,
+          poema_titulo: detallesObj.title || null,
+          pseudonimo: pseudonimo,
+          detalles: JSON.stringify(detallesObj)
+        }]);
+      } catch (err) {
+        console.warn("No se pudo registrar la pulsión:", err.message);
+      }
+    }
+
+    async function initVisitCounter() {
+      try {
+        let { data, error } = await _supabase
+          .from('Contador')
+          .select('visitas')
+          .eq('id', 1)
+          .maybeSingle();
+
+        if (error) throw error;
+        
+        let totalVisitas = data && data.visitas >= 50 ? data.visitas : 50;
+
+        if (!localStorage.getItem('visited_global_user')) {
+          localStorage.setItem('visited_global_user', 'true');
+          totalVisitas = totalVisitas + 1;
+
+          await _supabase
+            .from('Contador')
+            .update({ visitas: totalVisitas })
+            .eq('id', 1);
+
+          registrarPulsion('NUEVO_HABITANTE_INGRESADO');
+        }
+
+        document.getElementById('visitCounter').textContent = String(totalVisitas).padStart(8, '0');
+
+        _supabase
+          .channel('cambios-contador')
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'Contador', filter: 'id=eq.1' }, payload => {
+            if (payload.new && typeof payload.new.visitas === 'number') {
+              let realtimeVisitas = payload.new.visitas < 50 ? 50 : payload.new.visitas;
+              document.getElementById('visitCounter').textContent = String(realtimeVisitas).padStart(8, '0');
+            }
+          })
+          .subscribe();
+
+      } catch (err) {
+        console.error("Error en el contador:", err.message);
+        document.getElementById('visitCounter').textContent = "00000050";
+      }
+    }
+
+    async function cargarEcos() {
+      const container = document.getElementById("ecosList");
+      if (!container) return;
+
+      const { data: ecos, error } = await _supabase
+        .from('ecos')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error || !ecos) {
+        container.innerHTML = `<div class="text-zinc-600 text-xs italic p-2">Error al cargar ecos.</div>`;
+        return;
+      }
+
+      if (ecos.length === 0) {
+        container.innerHTML = `<div class="text-zinc-600 text-xs italic p-2">Aún no hay ecos en el Reino.</div>`;
+        return;
+      }
+
+      container.innerHTML = ecos.map(eco => `
+        <div class="p-3 bg-[#121316] border border-zinc-800/80 rounded-lg">
+          <div class="text-[10px] font-code text-amber-400 uppercase tracking-wider font-semibold mb-1">
+            ${eco.pseudonimo || 'ANÓNIMO'}
+          </div>
+          <p class="text-xs text-zinc-300 font-sans leading-relaxed">${eco.mensaje}</p>
+        </div>
+      `).join('');
+
+      _supabase
+        .channel('ecos-live')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ecos' }, () => cargarEcos())
+        .subscribe();
+    }
+
+    async function enviarEco(event) {
+      event.preventDefault();
+      const userInput = document.getElementById("echoUser");
+      const msgInput = document.getElementById("echoMessage");
+
+      const pseudonimo = userInput?.value.trim() || '';
+      const mensaje = msgInput?.value.trim() || '';
+
+      if (!pseudonimo || !mensaje) return;
+
+      const { error } = await _supabase.from('ecos').insert([{ pseudonimo, mensaje }]);
+
+      if (error) {
+        alert("Error al enviar el eco. Revisa tu conexión.");
+      } else {
+        registrarPulsion('PULSION_ECO_ENVIADO', { pseudonimo, mensaje });
+        msgInput.value = '';
+        cargarEcos();
+      }
+    }
+
+    async function cargarCodigosDescifrados() {
+      const container = document.getElementById("codigosList");
+      if (!container) return;
+
+      const { data: codigos, error } = await _supabase
+        .from('codigos_descifrados')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error || !codigos) {
+        container.innerHTML = `<div class="text-zinc-600 text-xs italic p-2">Sin registros de códigos.</div>`;
+        return;
+      }
+
+      if (codigos.length === 0) {
+        container.innerHTML = `<div class="text-zinc-600 text-xs italic p-2">Ningún código ha sido descifrado aún.</div>`;
+        return;
+      }
+
+      container.innerHTML = codigos.map(item => `
+        <div class="p-2.5 bg-[#121316] border border-zinc-800/80 rounded-lg flex items-center justify-between">
+          <span class="text-amber-400/90 font-mono font-bold tracking-widest">${item.codigo}</span>
+          <span class="text-[11px] text-zinc-400">Descifrado por: <strong class="text-zinc-200">${item.pseudonimo || 'HABITANTE'}</strong></span>
+        </div>
+      `).join('');
+
+      _supabase
+        .channel('codigos-live')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'codigos_descifrados' }, () => cargarCodigosDescifrados())
+        .subscribe();
+    }
+
+    async function registrarCodigoDescifrado(codigoIngresado, nombreUsuario) {
+      const pseudonimo = nombreUsuario || document.getElementById("echoUser")?.value || 'HABITANTE';
+      const { error } = await _supabase.from('codigos_descifrados').insert([{ 
+        codigo: codigoIngresado.toUpperCase(), 
+        pseudonimo: pseudonimo 
+      }]);
+
+      if (!error) {
+        registrarPulsion('PULSION_CODIGO_DESCIFRADO', { codigo: codigoIngresado });
+        cargarCodigosDescifrados();
+      }
+    }
+
+    async function fetchPoemsFromSupabase() {
+      try {
+        const { data, error } = await _supabase.from('poemas').select('*');
+        if (error) throw error;
+        
+        const nuevoCatalogo = {};
+        data.forEach(poema => {
+          if (poema.is_hidden === true) return; 
+
+          nuevoCatalogo[poema.key] = {
+            title: poema.titulo,
+            book: poema.book,
+            book_title: poema.book,
+            tipo_render: poema.tipo_render,
+            body_raw: poema.contenido,
+            binary_code: poema.binary_code,
+            is_hidden: poema.is_hidden,
+            metadatos_diseno: typeof poema.metadatos_diseno === 'string'
+              ? JSON.parse(poema.metadatos_diseno)
+              : poema.metadatos_diseno
+          };
+        });
+        
+        catalog = nuevoCatalogo;
+        dibujarGridDePoemas();
+        
+        if (catalog['silencio']) {
+          selectPoem('silencio', false);
+        } else {
+          const keys = Object.keys(catalog);
+          if (keys.length > 0) selectPoem(keys[0], false);
+        }
+
+      } catch (err) {
+        console.error("Error cargando poemas desde Supabase:", err.message);
+      }
+    }
+
+    function aplicarSangriaFrancesa(container) {
+      const versosDOM = container.querySelectorAll('p');
+      versosDOM.forEach(verso => {
+        const clon = verso.cloneNode(true);
+        clon.style.position = 'absolute';
+        clon.style.whiteSpace = 'nowrap';
+        clon.style.visibility = 'hidden';
+        clon.style.width = 'auto';
+        document.body.appendChild(clon);
+        
+        if (verso.offsetWidth < clon.offsetWidth) {
+          verso.classList.add('sangria-francesa-aplicada');
+        }
+        document.body.removeChild(clon);
+      });
+    }
+
+    function selectPoem(key, trackPulsion = true) {
+      const poema = catalog[key];
+      if (!poema) return;
+      
+      changeActiveView('read');
+      
+      const tituloHTML = document.getElementById('poemTitle'); 
+      const container = document.getElementById('poemBodyContainer');
+      const bookLabel = document.getElementById('poemBookLabel');
+      
+      bookLabel.textContent = poema.book_title || 'EL REINO';
+      
+      let bookTextColor = 'text-amber-500';
+      const bkLower = (poema.book || '').toLowerCase();
+      if (bkLower.includes('primavera')) {
+        bookTextColor = 'text-emerald-500';
+      } else if (bkLower.includes('orbita') || bkLower.includes('órbita')) {
+        bookTextColor = 'text-cyan-400';
+      }
+      
+      bookLabel.className = `font-mono text-xs uppercase tracking-widest font-bold ${bookTextColor}`;
+      
+      const renderActual = poema.tipo_render || 'estandar';
+      document.getElementById('poemRenderBadge').textContent = `render: ${renderActual}`;
+      
+      if (renderActual === 'terminal' || renderActual === 'preformateado') {
+        tituloHTML.className = "text-6xl md:text-7xl font-code text-amber-500 tracking-wider font-bold mb-6 uppercase animate-fadeIn font-mono";
+      } else {
+        tituloHTML.className = "text-3xl lg:text-4xl font-light tracking-wide text-zinc-100 uppercase font-serif mb-12";
+      }
+      
+      tituloHTML.textContent = poema.title || 'SIN TÍTULO';
+      const rawText = poema.body_raw ? String(poema.body_raw) : '';
+      container.innerHTML = ''; 
+
+      if (trackPulsion) {
+        registrarPulsion('POEMA_LEIDO', { key: key, title: poema.title, book: poema.book });
+      }
+      
+      switch (renderActual) {
+        case 'estandar':
         case 'tradicional':
           container.className = "text-lg leading-none text-zinc-300 font-light font-serif whitespace-normal space-y-1.5 animate-fadeIn";
           const fragmentoEstandar = document.createDocumentFragment();
@@ -25,7 +540,7 @@ case 'estandar':
                 pVerso.innerHTML = '&nbsp;';
                 pVerso.className = 'h-6'; 
               } else {
-                pVerso.innerHTML = lineaLimpia; // <--- AQUÍ: se usa innerHTML en lugar de textContent
+                pVerso.innerHTML = lineaLimpia;
               }
               fragmentoEstandar.appendChild(pVerso);
             }
@@ -34,3 +549,211 @@ case 'estandar':
           container.appendChild(fragmentoEstandar);
           aplicarSangriaFrancesa(container);
           break;
+
+        case 'preformateado':
+        case 'terminal':
+          container.className = "font-code text-sm text-amber-400/90 bg-zinc-950/60 p-6 rounded-xl border border-zinc-800/80 whitespace-pre-wrap overflow-x-auto leading-relaxed space-y-4 animate-fadeIn";
+          container.textContent = rawText || 'Este poema aún no tiene contenido.';
+          break;
+
+        case 'tabular_grid':
+          container.className = "flex flex-col gap-4 font-mono text-base text-cyan-100/90 animate-fadeIn";
+          const lineasTabulares = rawText.split('\\n');
+          lineasTabulares.forEach(linea => {
+            const columnas = linea.split('||');
+            const filaDiv = document.createElement('div');
+            if (poema.metadatos_diseno && poema.metadatos_diseno.mobile_stack) {
+              filaDiv.className = "flex flex-col md:grid md:grid-cols-2 gap-4 border-l-2 border-zinc-800 md:border-l-0 pl-3 md:pl-0";
+            } else {
+              filaDiv.className = "grid grid-cols-2 gap-4";
+            }
+            columnas.forEach(col => {
+              const colSpan = document.createElement('div');
+              colSpan.className = "whitespace-pre-line";
+              colSpan.textContent = col.trim();
+              filaDiv.appendChild(colSpan);
+            });
+            container.appendChild(filaDiv);
+          });
+          break;
+
+        case 'collage_libre':
+          container.className = "animate-fadeIn";
+          const canvas = document.createElement('div');
+          canvas.className = "collage-canvas rounded-xl shadow-inner shadow-black";
+          canvas.style.aspectRatio = (poema.metadatos_diseno && poema.metadatos_diseno.aspect_ratio) || "1/1";
+          if (poema.metadatos_diseno && poema.metadatos_diseno.elementos) {
+            poema.metadatos_diseno.elementos.forEach(el => {
+              const span = document.createElement('span');
+              span.className = `collage-item ${el.font || 'font-serif'}`;
+              span.style.left = `${el.x}%`;
+              span.style.top = `${el.y}%`;
+              span.style.fontSize = el.size || '1rem';
+              span.style.fontWeight = el.weight || 'normal';
+              span.style.fontStyle = el.style || 'normal';
+              span.style.color = el.color || '#E4E4E7';
+              span.textContent = el.texto || '';
+              canvas.appendChild(span);
+            });
+          }
+          container.appendChild(canvas);
+          break;
+
+        default:
+          container.className = "text-lg leading-relaxed text-zinc-300 font-light font-serif whitespace-normal space-y-4 animate-fadeIn";
+          container.textContent = rawText;
+          break;
+      }
+    }
+
+    function dibujarGridDePoemas() {
+      const contenedor = document.getElementById('contenedor-tarjetas');
+      if (!contenedor) return;
+      contenedor.innerHTML = ''; 
+
+      const secciones = [
+        { id: 'el-reino', titulo: 'EL REINO', subtitulo: 'PRIMERA SECCIÓN', color: 'text-amber-500', borderHover: 'hover:border-amber-500/40', badgeColor: 'text-amber-500', matches: ['el-reino', 'el reino'] },
+        { id: 'orbita-rota', titulo: 'ÓRBITA ROTA', subtitulo: 'SEGUNDA SECCIÓN', color: 'text-cyan-400', borderHover: 'hover:border-cyan-500/40', badgeColor: 'text-cyan-400', matches: ['orbita-rota', 'órbita-rota', 'orbita rota', 'órbita rota'] },
+        { id: 'primavera-extramuros', titulo: 'PRIMAVERA EXTRAMUROS', subtitulo: 'TERCERA SECCIÓN', color: 'text-emerald-500', borderHover: 'hover:border-emerald-500/40', badgeColor: 'text-emerald-500', matches: ['primavera-extramuros', 'primavera extramuros'] }
+      ];
+
+      secciones.forEach(sec => {
+        const poemasDeSeccion = Object.keys(catalog).filter(key => {
+          const poema = catalog[key];
+          if (poema.is_hidden) return false;
+          const bookVal = (poema.book || '').toLowerCase().trim();
+          return sec.matches.some(m => bookVal.includes(m));
+        });
+
+        if (poemasDeSeccion.length > 0) {
+          const secWrapper = document.createElement('div');
+          secWrapper.className = 'space-y-4';
+
+          secWrapper.innerHTML = `
+            <div class="border-b border-zinc-800/80 pb-2 flex items-center justify-between">
+              <h2 class="font-mono text-sm tracking-widest font-bold uppercase ${sec.color}">${sec.titulo}</h2>
+              <span class="font-mono text-[10px] text-zinc-600 tracking-wider uppercase">${sec.subtitulo}</span>
+            </div>
+          `;
+
+          const gridDiv = document.createElement('div');
+          gridDiv.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6';
+
+          poemasDeSeccion.forEach(key => {
+            const poema = catalog[key];
+            const card = document.createElement('div');
+            card.className = `bg-zinc-950 border border-zinc-900 p-6 rounded-2xl transition-all cubic-bezier(0.4, 0, 0.2, 1) cursor-pointer group ${sec.borderHover}`;
+
+            const rawContent = poema.body_raw ? String(poema.body_raw) : '';
+            const extracto = rawContent.replace(/\\n/g, ' ').replace(/\n/g, ' ').substring(0, 95) + '...';
+
+            card.innerHTML = `
+              <div class="font-mono text-xs ${sec.badgeColor} mb-2 uppercase tracking-wider">${poema.book_title || sec.titulo}</div>
+              <h3 class="text-xl font-bold text-zinc-100 group-hover:text-zinc-50 transition-colors uppercase">${poema.title || 'Sin Título'}</h3>
+              <p class="font-mono text-zinc-500 text-[11px] mt-3 line-clamp-2 leading-relaxed tracking-wide">${extracto || 'Sin contenido disponible.'}</p>
+            `;
+            card.onclick = () => { selectPoem(key, true); };
+            gridDiv.appendChild(card);
+          });
+
+          secWrapper.appendChild(gridDiv);
+          contenedor.appendChild(secWrapper);
+        }
+      });
+    }
+
+    async function decodeBinary() {
+      const codeInput = document.getElementById('binaryInput').value.trim();
+      const resultDiv = document.getElementById('binaryResult');
+      
+      if (!codeInput) return;
+      
+      try {
+        const { data, error } = await _supabase
+          .from('poemas')
+          .select('*')
+          .eq('binary_code', codeInput);
+          
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          const poemaOculto = data[0];
+          await registrarCodigoDescifrado(codeInput, document.getElementById("echoUser")?.value);
+
+          catalog[poemaOculto.key] = {
+            title: poemaOculto.titulo,
+            book: poemaOculto.book,
+            book_title: poemaOculto.book,
+            tipo_render: poemaOculto.tipo_render,
+            body_raw: poemaOculto.contenido,
+            binary_code: poemaOculto.binary_code,
+            is_hidden: poemaOculto.is_hidden,
+            metadatos_diseno: typeof poemaOculto.metadatos_diseno === 'string'
+              ? JSON.parse(poemaOculto.metadatos_diseno)
+              : poemaOculto.metadatos_diseno
+          };
+          
+          document.getElementById('binaryInput').value = '';
+          resultDiv.classList.add('hidden');
+          resultDiv.innerHTML = '';
+          
+          selectPoem(poemaOculto.key, true);
+        } else {
+          registrarPulsion('PULSION_FALLO_CODIGO_BINARIO', { intento: codeInput });
+          resultDiv.classList.remove('hidden');
+          resultDiv.innerHTML = `<span class="text-red-500 font-bold">ERROR: CÓDIGO INVÁLIDO</span><p class="text-[11px] text-zinc-500 mt-1">El descifrado falló. Revisa los bits del libro físico.</p>`;
+        }
+      } catch (err) {
+        console.error("Error al decodificar binario:", err.message);
+        resultDiv.classList.remove('hidden');
+        resultDiv.innerHTML = `<span class="text-red-500">Error de comunicación con el servidor.</span>`;
+      }
+    }
+
+    function changeActiveView(newView) {
+      activeView = newView;
+
+      document.getElementById('coversView')?.classList.toggle('hidden', activeView !== 'covers');
+      document.getElementById('gridView')?.classList.toggle('hidden', activeView !== 'grid');
+      document.getElementById('readView')?.classList.toggle('hidden', activeView !== 'read');
+      document.getElementById('authorView')?.classList.toggle('hidden', activeView !== 'author');
+      document.getElementById('terminalView')?.classList.toggle('hidden', activeView !== 'terminal');
+
+      const gridBtn = document.getElementById('gridNavBtn');
+      const termBtn = document.getElementById('terminalNavBtn');
+
+      if (gridBtn) gridBtn.classList.remove('border-amber-500/50', 'bg-zinc-800');
+      if (termBtn) termBtn.classList.remove('border-amber-500/50', 'bg-zinc-800');
+
+      if (activeView === 'grid') {
+        if (gridBtn) gridBtn.classList.add('border-amber-500/50', 'bg-zinc-800');
+      } else if (activeView === 'terminal') {
+        if (termBtn) termBtn.classList.add('border-amber-500/50', 'bg-zinc-800');
+      }
+
+      registrarPulsion('CAMBIO_DE_VISTA', { vista: newView });
+    }
+
+    function entrarAlReino() { cerrarPortada(); changeActiveView('grid'); }
+    function irDirectoATerminal() { cerrarPortada(); changeActiveView('terminal'); }
+    function irAAutor() { cerrarPortada(); changeActiveView('author'); }
+    function irAPortadas() { cerrarPortada(); changeActiveView('covers'); }
+
+    function cerrarPortada() {
+      const overlay = document.getElementById('welcomeOverlay');
+      if (overlay) {
+        overlay.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
+        setTimeout(() => { overlay.style.display = 'none'; }, 700);
+      }
+    }
+
+    function reabrirPortadaInicio() {
+      const overlay = document.getElementById('welcomeOverlay');
+      if (overlay) {
+        overlay.style.display = 'flex';
+        setTimeout(() => { overlay.classList.remove('opacity-0', 'pointer-events-none', 'scale-95'); }, 10);
+      }
+    }
+  </script>
+</body>
+</html>
