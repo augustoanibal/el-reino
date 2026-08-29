@@ -531,7 +531,7 @@
                 fragmentoEstandar.appendChild(blockquoteActual);
               }
               const pEpigrafe = document.createElement('p');
-              pEpigrafe.innerHTML = lineaLimpia.replace(/^>|<\/?blockquote>/g, '').trim();
+              pEpigrafe.textContent = lineaLimpia.replace(/^>|<\/?blockquote>/g, '').trim();
               blockquoteActual.appendChild(pEpigrafe);
             } else {
               blockquoteActual = null;
@@ -540,7 +540,7 @@
                 pVerso.innerHTML = '&nbsp;';
                 pVerso.className = 'h-6'; 
               } else {
-                pVerso.innerHTML = lineaLimpia;
+                pVerso.textContent = lineaLimpia;
               }
               fragmentoEstandar.appendChild(pVerso);
             }
