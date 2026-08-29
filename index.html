@@ -146,20 +146,22 @@
     </div>
 
     <!-- PANTALLA 2: LECTURA DE POEMAS -->
-    <div id="readView" class="min-h-[calc(100vh-6rem)] flex justify-center items-start p-6 lg:p-16">
-      <main class="max-w-3xl w-full flex flex-col gap-12">
-        <div id="poemWrapper" class="w-full">
-          <div id="poemMetadataHeader" class="mb-8 font-mono text-xs border-b border-zinc-800/40 pb-4 flex justify-between items-center">
-             <span id="poemBookLabel" class="text-amber-500 uppercase tracking-widest font-bold">EL REINO</span>
-             <span id="poemRenderBadge" class="text-zinc-500 border border-zinc-800 px-2 py-0.5 rounded text-[10px]">render: estandar</span>
-          </div>
-          <div id="poemContent" class="space-y-6">
-            <h2 id="poemTitle" class="text-3xl lg:text-4xl font-light tracking-wide text-zinc-100 uppercase">CARGANDO...</h2>
-            <div id="poemBodyContainer" class="text-lg text-zinc-300 font-light"></div>
-          </div>
+<div id="readView" class="min-h-[calc(100vh-6rem)] flex justify-center items-start p-6 lg:p-16">
+  <main class="max-w-3xl w-full flex flex-col gap-12">
+    <div id="poemWrapper" class="w-full">
+      <div id="poemMetadataHeader" class="mb-8 font-mono text-xs border-b border-zinc-800/40 pb-4 flex justify-between items-center">
+         <span id="poemBookLabel" class="text-amber-500 uppercase tracking-widest font-bold">EL REINO</span>
+         <span id="poemRenderBadge" class="text-zinc-500 border border-zinc-800 px-2 py-0.5 rounded text-[10px]">render: estandar</span>
+      </div>
+      <div id="poemContent" class="space-y-6">
+        <h2 id="poemTitle" class="text-3xl lg:text-4xl font-light tracking-wide text-zinc-100 uppercase font-serif">CONECTANDO...</h2>
+        <div id="poemBodyContainer" class="text-lg text-zinc-400 font-light font-serif">
+          <p class="animate-pulse">Cargando poema desde Supabase...</p>
         </div>
-      </main>
+      </div>
     </div>
+  </main>
+</div>
 
     <!-- PANTALLA 3: DATOS DEL AUTOR CON BIODATA COMPLETA -->
     <div id="authorView" class="hidden min-h-[calc(100vh-6rem)] flex justify-center items-start p-6 lg:p-16 animate-fadeIn">
@@ -255,6 +257,10 @@
     let catalog = {};
 
     window.addEventListener('DOMContentLoaded', () => {
+        const savedUser = localStorage.getItem('reino_pseudonimo');
+        const userEl = document.getElementById("echoUser");
+        if (savedUser && userEl) userEl.value = savedUser;
+
         fetchPoemsFromSupabase();
         initVisitCounter();
         cargarEcos();
@@ -263,13 +269,13 @@
 
     async function registrarPulsion(tipoAccion, detallesObj = {}) {
       try {
-        const pseudonimo = document.getElementById("echoUser")?.value || 'HABITANTE_ANÓNIMO';
+        const pseudonimo = document.getElementById("echoUser")?.value.trim() || 'HABITANTE_ANÓNIMO';
         await _supabase.from('interacciones').insert([{
           tipo_accion: tipoAccion,
           poema_key: detallesObj.key || null,
           poema_titulo: detallesObj.title || null,
           pseudonimo: pseudonimo,
-          detalles: JSON.stringify(detallesObj)
+          detalles: detallesObj
         }]);
       } catch (err) {
         console.warn("No se pudo registrar la pulsión:", err.message);
@@ -361,6 +367,8 @@
       const mensaje = msgInput?.value.trim() || '';
 
       if (!pseudonimo || !mensaje) return;
+
+      localStorage.setItem('reino_pseudonimo', pseudonimo);
 
       const { error } = await _supabase.from('ecos').insert([{ pseudonimo, mensaje }]);
 
@@ -734,7 +742,17 @@
       registrarPulsion('CAMBIO_DE_VISTA', { vista: newView });
     }
 
-    function entrarAlReino() { cerrarPortada(); changeActiveView('grid'); }
+    function entrarAlReino() {
+      cerrarPortada();
+      const keys = Object.keys(catalog);
+      if (keys.length > 0) {
+        const defaultKey = catalog['silencio'] ? 'silencio' : keys[0];
+        selectPoem(defaultKey, true);
+      } else {
+        changeActiveView('grid');
+      }
+    }
+
     function irDirectoATerminal() { cerrarPortada(); changeActiveView('terminal'); }
     function irAAutor() { cerrarPortada(); changeActiveView('author'); }
     function irAPortadas() { cerrarPortada(); changeActiveView('covers'); }
