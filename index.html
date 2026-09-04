@@ -257,7 +257,6 @@
     window.addEventListener('DOMContentLoaded', () => {
         fetchPoemsFromSupabase();
         initVisitCounter();
-        initInteraccionesListener();
         cargarEcos();
         cargarCodigosDescifrados();
     });
@@ -275,15 +274,6 @@
       } catch (err) {
         console.warn("No se pudo registrar la pulsión:", err.message);
       }
-    }
-
-    function initInteraccionesListener() {
-      _supabase
-        .channel('interacciones-live')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'interacciones' }, payload => {
-          console.log("Nueva interacción registrada en Supabase:", payload.new);
-        })
-        .subscribe();
     }
 
     async function initVisitCounter() {
@@ -511,7 +501,7 @@
       if (renderActual === 'terminal' || renderActual === 'preformateado') {
         tituloHTML.className = "text-6xl md:text-7xl font-code text-amber-500 tracking-wider font-bold mb-6 uppercase animate-fadeIn font-mono";
       } else {
-        tituloHTML.className = "text-3xl lg:text-4xl font-light tracking-wide text-zinc-100 uppercase font-serif mb-12";
+        tituloHTML.className = "text-3xl lg:text-4xl font-light tracking-wide text-zinc-100 uppercase font-serif mb-4";
       }
       
       tituloHTML.textContent = poema.title || 'SIN TÍTULO';
@@ -525,29 +515,45 @@
       switch (renderActual) {
         case 'estandar':
         case 'tradicional':
-          container.className = "text-lg leading-relaxed text-zinc-300 font-light font-serif whitespace-normal space-y-3 animate-fadeIn";
+          container.className = "text-lg leading-none text-zinc-300 font-light font-serif whitespace-normal space-y-1.5 animate-fadeIn";
+          const fragmentoEstandar = document.createDocumentFragment();
+          const lineasEstandar = rawText.split(/\\n|\n/);
           
-          const lineasEstandar = rawText.split(/\r?\n|\\n/);
-          
-          container.innerHTML = lineasEstandar.map(linea => {
+          let blockquoteActual = null;
+
+          lineasEstandar.forEach(linea => {
             const lineaLimpia = linea.trim();
-            if (!lineaLimpia) return '<p class="h-4">&nbsp;</p>';
-            
-            if (lineaLimpia.startsWith('>') || lineaLimpia.startsWith('&gt;')) {
-              const textoCita = lineaLimpia.replace(/^(&gt;|>)/, '').trim();
-              return `<blockquote class="border-l-2 border-zinc-600 pl-4 my-4 italic text-zinc-400 text-base">${textoCita}</blockquote>`;
+
+            if (lineaLimpia.startsWith('>') || lineaLimpia.startsWith('<blockquote>')) {
+              if (!blockquoteActual) {
+                blockquoteActual = document.createElement('blockquote');
+                blockquoteActual.className = "border-l-2 border-zinc-600 pl-4 my-4 italic text-zinc-400 text-base space-y-1";
+                fragmentoEstandar.appendChild(blockquoteActual);
+              }
+              const pEpigrafe = document.createElement('p');
+              pEpigrafe.innerHTML = lineaLimpia.replace(/^>|<\/?blockquote>/g, '').trim();
+              blockquoteActual.appendChild(pEpigrafe);
+            } else {
+              blockquoteActual = null;
+              const pVerso = document.createElement('p');
+              if (!lineaLimpia) {
+                pVerso.innerHTML = '&nbsp;';
+                pVerso.className = 'h-6'; 
+              } else {
+                pVerso.innerHTML = lineaLimpia;
+              }
+              fragmentoEstandar.appendChild(pVerso);
             }
-            
-            return `<p class="leading-relaxed">${lineaLimpia}</p>`;
-          }).join('');
+          });
           
+          container.appendChild(fragmentoEstandar);
           aplicarSangriaFrancesa(container);
           break;
 
         case 'preformateado':
         case 'terminal':
           container.className = "font-code text-sm text-amber-400/90 bg-zinc-950/60 p-6 rounded-xl border border-zinc-800/80 whitespace-pre-wrap overflow-x-auto leading-relaxed space-y-4 animate-fadeIn";
-          container.textContent = rawText || 'Este poema aún no tiene contenido.';
+          container.innerHTML = rawText.replace(/\\n/g, '<br>').replace(/\n/g, '<br>') || 'Este poema aún no tiene contenido.';
           break;
 
         case 'tabular_grid':
@@ -564,7 +570,7 @@
             columnas.forEach(col => {
               const colSpan = document.createElement('div');
               colSpan.className = "whitespace-pre-line";
-              colSpan.textContent = col.trim();
+              colSpan.innerHTML = col.trim().replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
               filaDiv.appendChild(colSpan);
             });
             container.appendChild(filaDiv);
@@ -586,7 +592,7 @@
               span.style.fontWeight = el.weight || 'normal';
               span.style.fontStyle = el.style || 'normal';
               span.style.color = el.color || '#E4E4E7';
-              span.textContent = el.texto || '';
+              span.innerHTML = el.texto.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
               canvas.appendChild(span);
             });
           }
@@ -595,7 +601,7 @@
 
         default:
           container.className = "text-lg leading-relaxed text-zinc-300 font-light font-serif whitespace-normal space-y-4 animate-fadeIn";
-          container.textContent = rawText;
+          container.innerHTML = rawText.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
           break;
       }
     }
