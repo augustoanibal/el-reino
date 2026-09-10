@@ -123,7 +123,7 @@
           <span class="font-mono text-xs text-zinc-500 tracking-wider">EDICIONES PUBLICADAS</span>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch justify-center">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 items-stretch justify-center">
           <div class="bg-zinc-950 p-4 flex flex-col items-center shadow-xl">
             <img src="https://kpvucfktjnuqltuvgflx.supabase.co/storage/v1/object/public/portadas/1_primavera_extramuros.png" alt="Primavera Extramuros" class="w-full h-auto mb-4">
             <h3 class="font-mono text-[10px] text-zinc-200 uppercase tracking-widest font-bold mt-auto text-center">Primavera Extramuros (2018)<br>Diseño: Jhon Toledo<br>Arte: W.M. Ccoto</h3>
@@ -135,6 +135,10 @@
           <div class="bg-zinc-950 p-4 flex flex-col items-center shadow-xl">
             <img src="https://kpvucfktjnuqltuvgflx.supabase.co/storage/v1/object/public/portadas/3_los_extramuros.png" alt="Los Extramuros" class="w-full h-auto mb-4">
             <h3 class="font-mono text-[10px] text-zinc-200 uppercase tracking-widest font-bold mt-auto text-center">Los Extramuros (2024)<br>Diseño: Jhon Toledo<br>Arte: W.M. Ccoto</h3>
+          </div>
+          <div class="bg-zinc-950 p-4 flex flex-col items-center shadow-xl">
+            <img src="https://kpvucfktjnuqltuvgflx.supabase.co/storage/v1/object/public/portadas/4_EL%20REINO.png" alt="El Reino" class="w-full h-auto mb-4">
+            <h3 class="font-mono text-[10px] text-zinc-200 uppercase tracking-widest font-bold mt-auto text-center">El Reino (2026)<br><br></h3>
           </div>
         </div>
       </div>
@@ -444,11 +448,10 @@
         catalog = nuevoCatalogo;
         dibujarGridDePoemas();
         
-        if (catalog['silencio']) {
-          selectPoem('silencio', false);
-        } else {
-          const keys = Object.keys(catalog);
-          if (keys.length > 0) selectPoem(keys[0], false);
+        // Solo selecciona el poema si la vista actual requiere la lectura
+        const defaultKey = catalog['silencio'] ? 'silencio' : Object.keys(catalog)[0];
+        if (defaultKey && activeView === 'read') {
+          selectPoem(defaultKey, false);
         }
 
       } catch (err) {
