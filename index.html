@@ -75,7 +75,7 @@
         }
     </style>
 </head>
-<body class="bg-[#121316] text-[#E4E4E7] selection:bg-amber-950 selection:text-amber-200">
+<body class="bg-[#121316] text-[#E4E4E7] selection:bg-amber-950 selection:text-amber-200 flex flex-col min-h-screen">
 
   <!-- PORTADA DE BIENVENIDA / OVERLAY -->
   <div id="welcomeOverlay" class="fixed inset-0 bg-[#121316] z-[9999] flex items-center justify-center p-8 transition-all duration-700 ease-in-out">
@@ -114,7 +114,7 @@
     </div>
   </header>
 
-  <div class="pt-24">
+  <div class="pt-24 flex-1">
     <!-- PANTALLA 0: GALERÍA DE PORTADAS (LIBROS) -->
     <div id="coversView" class="hidden p-8 animate-fadeIn min-h-[calc(100vh-6rem)]">
       <div class="max-w-6xl mx-auto flex flex-col gap-8">
@@ -249,6 +249,30 @@
       </main>
     </div>
   </div>
+
+  <!-- PIE DE PÁGINA (CREATIVE COMMONS FOOTER INTEGRADO) -->
+  <footer class="w-full bg-[#0d0e10] border-t border-zinc-800/80 py-6 px-4 mt-auto text-center font-code text-xs text-zinc-500 leading-relaxed">
+    <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-center gap-3">
+      <span>
+        <a href="https://augustoanibal.github.io/el-reino/" class="text-amber-400/90 hover:text-amber-300 transition-colors font-bold">El-reino</a> 
+        © 2026 por 
+        <a href="https://augustoanibal.github.io/el-reino/" class="text-zinc-300 hover:text-zinc-100 transition-colors">Augusto Aníbal Toledo</a>
+      </span>
+      <span class="hidden md:inline text-zinc-700">|</span>
+      <span class="inline-flex items-center gap-1.5 flex-wrap justify-center">
+        Licenciado bajo 
+        <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener noreferrer" class="text-amber-400/90 hover:text-amber-300 underline underline-offset-2 transition-colors font-semibold">
+          CC BY-NC-ND 4.0
+        </a>
+        <span class="inline-flex items-center gap-1 bg-zinc-900 border border-zinc-800 rounded px-1.5 py-0.5 ml-1">
+          <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="CC" class="w-3.5 h-3.5 invert opacity-70">
+          <img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="BY" class="w-3.5 h-3.5 invert opacity-70">
+          <img src="https://mirrors.creativecommons.org/presskit/icons/nc.svg" alt="NC" class="w-3.5 h-3.5 invert opacity-70">
+          <img src="https://mirrors.creativecommons.org/presskit/icons/nd.svg" alt="ND" class="w-3.5 h-3.5 invert opacity-70">
+        </span>
+      </span>
+    </div>
+  </footer>
 
   <script>
     let activeView = 'read'; 
@@ -448,7 +472,6 @@
         catalog = nuevoCatalogo;
         dibujarGridDePoemas();
         
-        // Solo selecciona el poema si la vista actual requiere la lectura
         const defaultKey = catalog['silencio'] ? 'silencio' : Object.keys(catalog)[0];
         if (defaultKey && activeView === 'read') {
           selectPoem(defaultKey, false);
