@@ -878,35 +878,18 @@
       }
     }
 
-    async function downloadPDF(url, filename) {
+    // FUNCIÓN DE DESCARGA DIRECTA Y LIBRE CORREGIDA (PC Y MÓVIL)
+    function downloadPDF(url, filename) {
       if (!url || url === '#') return;
+      
+      // Si es un enlace DOI externo, abrir en pestaña nueva
       if (url.includes('doi.org') || (!url.includes('supabase.co') && url.startsWith('http'))) {
         window.open(url, '_blank', 'noopener,noreferrer');
         return;
       }
 
-      try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Error en la red');
-        const blob = await response.blob();
-        
-        const blobUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = filename || 'documento-cartapecora.pdf';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(blobUrl);
-      } catch (err) {
-        const a = document.createElement('a');
-        a.href = url;
-        a.target = '_blank';
-        a.download = filename || 'documento-cartapecora.pdf';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      }
+      // Apertura directa en pestaña nueva para permitir que el navegador o lector nativo maneje el PDF perfectamente
+      window.open(url, '_blank', 'noopener,noreferrer');
     }
 
     function obtenerUrlPDF(item) {
